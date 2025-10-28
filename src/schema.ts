@@ -39,7 +39,7 @@ export const JazzProfile = co.profile({
  *  where you can store top-level objects for that user */
 export const AccountRoot = co.map({
   myGames: co.list(Game),
-  guestGames: co.list(Game),
+  guestGames: co.optional(co.list(Game)),
 });
 
 export const JazzAccount = co
@@ -56,6 +56,15 @@ export const JazzAccount = co
         myGames: [],
         guestGames: [],
       });
+    } else {
+      // Ensure guestGames exists for accounts created before it was added to the schema
+      await account.$jazz.ensureLoaded({ resolve: { root: true } });
+      if (account.root && !account.root.$jazz.has("guestGames")) {
+        const guestGamesList = co
+          .list(Game)
+          .create([], account.root.$jazz.owner);
+        account.root.$jazz.set("guestGames", guestGamesList);
+      }
     }
 
     if (!account.$jazz.has("profile")) {

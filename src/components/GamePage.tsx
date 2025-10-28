@@ -38,9 +38,13 @@ export function GamePage() {
       game.$jazz.set("winner", winner);
       game.$jazz.set("dateCompleted", dateCompleted);
 
-      // Add to player's guest games if authenticated
+      // Add to player's guest games if authenticated and list exists
       if (me.root.guestGames) {
-        me.root.guestGames.$jazz.push(game);
+        try {
+          me.root.guestGames.$jazz.push(game);
+        } catch (err) {
+          console.error("Failed to add game to guestGames:", err);
+        }
       }
     } catch (err) {
       console.error("Failed to submit move:", err);
@@ -98,7 +102,7 @@ export function GamePage() {
   const isHost =
     me &&
     game.$jazz.owner.members.some(
-      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin",
+      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin"
     );
 
   const isCompleted = !!game.winner;
@@ -110,8 +114,8 @@ export function GamePage() {
     const userWon = isDraw
       ? false
       : isHost
-      ? game.winner === "HOST"
-      : game.winner === "PLAYER";
+        ? game.winner === "HOST"
+        : game.winner === "PLAYER";
 
     return (
       <div className="max-w-lg mx-auto">
@@ -120,8 +124,8 @@ export function GamePage() {
             {isDraw
               ? "🤝 It's a Draw!"
               : userWon
-              ? "🎉 You Won!"
-              : "😔 You Lost"}
+                ? "🎉 You Won!"
+                : "😔 You Lost"}
           </h2>
           <p className="text-gray-600 mb-6">
             Game completed{" "}
@@ -304,14 +308,6 @@ export function GamePage() {
             }`}
           >
             {isSubmitting ? "Submitting..." : "Reveal Result"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/" })}
-            className="py-3 px-6 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            Back
           </button>
         </div>
       </div>

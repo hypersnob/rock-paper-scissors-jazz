@@ -49,7 +49,7 @@ export function CreateGame() {
           dateCompleted: undefined,
           isArchived: false,
         },
-        gameGroup,
+        gameGroup
       );
 
       // Add game to user's games using the $jazz.push method
@@ -62,7 +62,7 @@ export function CreateGame() {
         params: { gameId: game.$jazz.id },
       });
     } catch (error) {
-      // biome-ignore lint/suspicious/noConsole
+      // biome-ignore lint: for debugging
       console.error("Failed to create game:", error);
     } finally {
       setIsCreating(false);
@@ -159,14 +159,6 @@ export function CreateGame() {
               }`}
             >
               {isCreating ? "Creating Game..." : "Create Game"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/" })}
-              className="py-3 px-6 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
-            >
-              Cancel
             </button>
           </div>
 

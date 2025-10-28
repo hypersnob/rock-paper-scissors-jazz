@@ -4,9 +4,9 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import App from "./App";
-import { CreateGame } from "./CreateGame";
-import { Dashboard } from "./Dashboard";
-import { GamePage } from "./GamePage";
+import { CreateGame } from "./components/CreateGame";
+import { Dashboard } from "./components/Dashboard";
+import { GamePage } from "./components/GamePage";
 
 // Root route
 const rootRoute = createRootRoute({

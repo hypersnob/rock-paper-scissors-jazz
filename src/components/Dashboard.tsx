@@ -1,7 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
 import { useState } from "react";
-import { formatGameDate, JazzAccount } from "./schema.ts";
+import { JazzAccount } from "@/schema";
+import { formatGameDate } from "@/helpers";
 
 export function Dashboard() {
   const { me } = useAccount(JazzAccount, {
@@ -25,13 +26,13 @@ export function Dashboard() {
     });
   };
 
-  const handleArchiveGame = (game: any, e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Archive game by updating its isArchived property
-    if (game?.$jazz) {
-      game.$jazz.set("isArchived", true);
-    }
-  };
+  // const handleArchiveGame = (game: any, e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   // Archive game by updating its isArchived property
+  //   if (game?.$jazz) {
+  //     game.$jazz.set("isArchived", true);
+  //   }
+  // };
 
   const getGameStatus = (game: any) => {
     if (!game)

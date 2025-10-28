@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Group } from "jazz-tools";
 import { useAccount } from "jazz-tools/react";
 import { useEffect, useState } from "react";
-import { Game, JazzAccount, type Move } from "./schema.ts";
+import { Game, JazzAccount, type Move } from "../schema.ts";
 
 const MOVES: { move: Move; emoji: string; label: string }[] = [
   { move: "ROCK", emoji: "🪨", label: "Rock" },

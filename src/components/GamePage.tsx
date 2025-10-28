@@ -1,13 +1,8 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAccount, useCoState } from "jazz-tools/react";
 import { useState } from "react";
-import {
-  determineWinner,
-  formatGameDate,
-  Game,
-  JazzAccount,
-  type Move,
-} from "./schema.ts";
+import { Game, JazzAccount, type Move } from "@/schema";
+import { determineWinner, formatGameDate } from "@/helpers";
 
 const MOVES: { move: Move; emoji: string; label: string }[] = [
   { move: "ROCK", emoji: "🪨", label: "Rock" },

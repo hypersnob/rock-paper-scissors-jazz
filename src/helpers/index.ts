@@ -1,6 +1,13 @@
-import { GameType, Move, Winner } from "@/schema";
+import type { Account } from "jazz-tools";
+import type { GameType, Move, Winner } from "@/schema";
 
 // Game utility functions
+
+type GroupMember = {
+  role: string;
+  account?: Account;
+};
+
 export function getGameStatus(game: GameType) {
   if (game?.isArchived) return "ARCHIVED";
   if (game?.winner) return "COMPLETED";
@@ -35,5 +42,6 @@ export function formatGameDate(dateString: string): string {
 export function getHostAccountId(game: GameType): string | undefined {
   if (!game?.$jazz?.owner) return undefined;
   const members = game.$jazz.owner.members;
-  return members.find((m: any) => m.role === "admin")?.account?.$jazz?.id;
+  return members.find((m: GroupMember) => m.role === "admin")?.account?.$jazz
+    ?.id;
 }

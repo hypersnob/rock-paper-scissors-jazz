@@ -11,6 +11,7 @@ import { JazzAccount } from "@/schema";
 // This identifies the app in the passkey auth
 export const APPLICATION_NAME = "hard-rock-paper-scissors";
 
+// biome-ignore lint/style/noNonNullAssertion: Forbidden non-null assertion
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <JazzReactProvider
@@ -22,5 +23,5 @@ createRoot(document.getElementById("root")!).render(
       <RouterProvider router={router} />
       <JazzInspector />
     </JazzReactProvider>
-  </StrictMode>,
+  </StrictMode>
 );

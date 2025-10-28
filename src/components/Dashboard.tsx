@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
 import { useState } from "react";
-import { JazzAccount } from "@/schema";
 import { formatGameDate } from "@/helpers";
+import { type GameType, JazzAccount } from "@/schema";
 
 export function Dashboard() {
   const { me } = useAccount(JazzAccount, {
@@ -10,7 +10,7 @@ export function Dashboard() {
   });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"my-games" | "guest-games">(
-    "my-games",
+    "my-games"
   );
 
   // Get games from Jazz - these are real CoLists that will contain game data
@@ -18,7 +18,7 @@ export function Dashboard() {
   const guestGames = me?.root?.guestGames || [];
   const currentGames = activeTab === "my-games" ? myGames : guestGames;
 
-  const handleGameClick = (game: any) => {
+  const handleGameClick = (game: GameType) => {
     const gameId = game.$jazz.id;
     navigate({
       to: "/$gameId",
@@ -34,7 +34,7 @@ export function Dashboard() {
   //   }
   // };
 
-  const getGameStatus = (game: any) => {
+  const getGameStatus = (game: GameType) => {
     if (!game)
       return { text: "Unknown", className: "bg-gray-100 text-gray-600" };
     if (game.isArchived)
@@ -47,7 +47,7 @@ export function Dashboard() {
     };
   };
 
-  const getWinnerText = (game: any) => {
+  const getWinnerText = (game: GameType) => {
     if (!game.winner) return "";
     const isMyGame = activeTab === "my-games";
     const userWon =
@@ -92,6 +92,7 @@ export function Dashboard() {
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8">
           <button
+            type="button"
             onClick={() => setActiveTab("my-games")}
             className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === "my-games"
@@ -102,6 +103,7 @@ export function Dashboard() {
             My Games ({myGames.length})
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("guest-games")}
             className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === "guest-games"
@@ -128,6 +130,7 @@ export function Dashboard() {
             </p>
             {activeTab === "my-games" && (
               <button
+                type="button"
                 onClick={() => navigate({ to: "/" })}
                 className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
               >
@@ -140,8 +143,8 @@ export function Dashboard() {
         <div className="space-y-4">
           {Array.isArray(currentGames) && currentGames.length > 0 ? (
             currentGames
-              .filter((game: any) => game != null)
-              .map((game: any, index: number) => {
+              .filter((game: GameType) => game != null)
+              .map((game: GameType, index: number) => {
                 const status = getGameStatus(game);
                 const gameId = game.$jazz?.id;
 
@@ -192,11 +195,11 @@ export function Dashboard() {
                                   game.winner === "DRAW"
                                     ? "text-gray-600"
                                     : (activeTab === "my-games" &&
-                                        game.winner === "HOST") ||
-                                      (activeTab === "guest-games" &&
-                                        game.winner === "PLAYER")
-                                    ? "text-green-600"
-                                    : "text-red-600"
+                                          game.winner === "HOST") ||
+                                        (activeTab === "guest-games" &&
+                                          game.winner === "PLAYER")
+                                      ? "text-green-600"
+                                      : "text-red-600"
                                 }`}
                               >
                                 {getWinnerText(game)}
@@ -221,12 +224,14 @@ export function Dashboard() {
       <div className="mt-8 flex justify-center">
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => navigate({ to: "/" })}
             className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
           >
             Create New Game
           </button>
           <button
+            type="button"
             onClick={() => navigate({ to: "/" })}
             className="px-6 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
           >

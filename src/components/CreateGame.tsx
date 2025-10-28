@@ -54,7 +54,7 @@ export function CreateGame() {
 
       // Add game to user's games using the $jazz.push method
       // TypeScript thinks this could be null but migration ensures it exists
-      (me.root.myGames as any).$jazz.push(game);
+      me.root.myGames.$jazz.push(game);
 
       // Navigate to game page using the game's Jazz ID
       navigate({
@@ -62,6 +62,7 @@ export function CreateGame() {
         params: { gameId: game.$jazz.id },
       });
     } catch (error) {
+      // biome-ignore lint/suspicious/noConsole
       console.error("Failed to create game:", error);
     } finally {
       setIsCreating(false);
@@ -109,6 +110,7 @@ export function CreateGame() {
             <div className="grid grid-cols-3 gap-4">
               {MOVES.map(({ move, emoji, label }) => (
                 <button
+                  type="button"
                   key={move}
                   onClick={() => setSelectedMove(move)}
                   className={`p-6 rounded-lg border-2 transition-all transform hover:scale-105 ${
@@ -147,6 +149,7 @@ export function CreateGame() {
 
           <div className="flex gap-4">
             <button
+              type="button"
               onClick={handleCreateGame}
               disabled={!selectedMove || isCreating}
               className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${
@@ -159,6 +162,7 @@ export function CreateGame() {
             </button>
 
             <button
+              type="button"
               onClick={() => navigate({ to: "/" })}
               className="py-3 px-6 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
             >

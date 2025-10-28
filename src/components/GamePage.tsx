@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAccount, useCoState } from "jazz-tools/react";
 import { useState } from "react";
-import { Game, JazzAccount, type Move } from "@/schema";
 import { determineWinner, formatGameDate } from "@/helpers";
+import { Game, JazzAccount, type Move } from "@/schema";
 
 const MOVES: { move: Move; emoji: string; label: string }[] = [
   { move: "ROCK", emoji: "🪨", label: "Rock" },
@@ -40,7 +40,7 @@ export function GamePage() {
 
       // Add to player's guest games if authenticated
       if (me.root.guestGames) {
-        (me.root.guestGames as any).$jazz.push(game);
+        me.root.guestGames.$jazz.push(game);
       }
     } catch (err) {
       console.error("Failed to submit move:", err);
@@ -54,8 +54,8 @@ export function GamePage() {
     try {
       await navigator.clipboard.writeText(url);
       alert("Game link copied to clipboard!");
-    } catch (err) {
-      alert("Failed to copy link. Please copy manually: " + url);
+    } catch {
+      alert(`Failed to copy link. Please copy manually: ${url}`);
     }
   };
 
@@ -83,6 +83,7 @@ export function GamePage() {
             permission to view it.
           </p>
           <button
+            type="button"
             onClick={() => navigate({ to: "/" })}
             className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
           >
@@ -169,12 +170,14 @@ export function GamePage() {
 
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => navigate({ to: "/" })}
             className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
           >
             Create New Game
           </button>
           <button
+            type="button"
             onClick={() => navigate({ to: "/dashboard" })}
             className="px-6 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
           >
@@ -201,6 +204,7 @@ export function GamePage() {
               </code>
             </div>
             <button
+              type="button"
               onClick={handleShareGame}
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
@@ -226,12 +230,14 @@ export function GamePage() {
 
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => navigate({ to: "/dashboard" })}
             className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
           >
             View Dashboard
           </button>
           <button
+            type="button"
             onClick={() => navigate({ to: "/" })}
             className="px-6 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
           >
@@ -270,6 +276,7 @@ export function GamePage() {
           <div className="grid grid-cols-3 gap-4">
             {MOVES.map(({ move, emoji, label }) => (
               <button
+                type="button"
                 key={move}
                 onClick={() => setSelectedMove(move)}
                 className={`p-6 rounded-lg border-2 transition-all transform hover:scale-105 ${
@@ -300,6 +307,7 @@ export function GamePage() {
           </button>
 
           <button
+            type="button"
             onClick={() => navigate({ to: "/" })}
             className="py-3 px-6 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
           >
@@ -321,6 +329,7 @@ export function GamePage() {
           This game is not yet ready to play.
         </p>
         <button
+          type="button"
           onClick={() => navigate({ to: "/" })}
           className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >

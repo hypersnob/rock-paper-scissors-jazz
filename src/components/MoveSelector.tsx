@@ -1,12 +1,11 @@
-import PaperIcon from "@/icons/Paper.svg?react";
-import RockIcon from "@/icons/Rock.svg?react";
-import ScissorsIcon from "@/icons/Scissors.svg?react";
+import { cn } from "@/lib/utils.ts";
 import type { Move } from "../schema.ts";
+import { MoveIcon } from "./MoveIcon.tsx";
 
-const MOVES: { move: Move; icon: typeof PaperIcon; label: string }[] = [
-  { move: "ROCK", icon: RockIcon, label: "Rock" },
-  { move: "PAPER", icon: PaperIcon, label: "Paper" },
-  { move: "SCISSORS", icon: ScissorsIcon, label: "Scissors" },
+const MOVES: { move: Move; label: string }[] = [
+  { move: "ROCK", label: "Rock" },
+  { move: "PAPER", label: "Paper" },
+  { move: "SCISSORS", label: "Scissors" },
 ];
 
 type MoveSelectorProps = {
@@ -39,34 +38,40 @@ export function MoveSelector({ onMoveSelect }: MoveSelectorProps) {
         </defs>
       </svg>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 lg:gap-x-8 place-items-center">
-        {MOVES.map(({ move, icon: Icon, label }, index) => (
-          <button
-            type="button"
-            title={label}
+      <div className="flex flex-wrap md:flex-nowrap place-items-center">
+        {MOVES.map(({ move, label }, index) => (
+          <div
             key={move}
-            onClick={() => onMoveSelect(move)}
-            className={`relative text-primary-foreground group flex flex-col items-center justify-center p-6 aspect-[cos(30deg)] ${
-              index === MOVES.length - 1
-                ? "col-span-2 lg:col-span-1 max-w-1/2 lg:max-w-none mx-auto lg:mx-0"
-                : ""
-            }`}
+            className={cn(
+              "relative text-primary-foreground transition-all transform group flex flex-col items-center justify-center p-4 aspect-[cos(30deg)] basis-1/2 md:basis-1/3",
+              index === MOVES.length - 1 &&
+                "mx-auto md:mx-0 -mt-[12.5%] md:mt-0"
+            )}
             style={
               {
                 filter: "url('#goo')",
               } as React.CSSProperties
             }
           >
+            <button
+              type="button"
+              title={label}
+              onClick={() => onMoveSelect(move)}
+              className="flex items-center justify-center aspect-square"
+            >
+              <MoveIcon
+                move={move}
+                className="group-hover:scale-105 transition-all transform size-2/3 lg:size-1/2 relative z-10"
+              />
+            </button>
             <div
-              className="absolute inset-0 bg-secondary aspect-[cos(30deg)] pointer-events-none"
+              className="absolute inset-4 bg-secondary group-hover:bg-primary transition-all transform pointer-events-none"
               style={{
                 clipPath:
                   "polygon(0% 25%,0% 75%,50% 100%,100% 75%,100% 25%,50% 0%)",
               }}
             />
-
-            <Icon className="mb-2 group-hover:scale-105 transition-all transform size-2/3 relative z-10" />
-          </button>
+          </div>
         ))}
       </div>
     </>

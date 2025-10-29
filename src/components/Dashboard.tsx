@@ -1,12 +1,13 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
 import { useState } from "react";
 import { formatGameDate } from "@/helpers";
 import { type GameType, JazzAccount } from "@/schema";
+import { Button } from "./ui/button";
 
 export function Dashboard() {
   const { me } = useAccount(JazzAccount, {
-    resolve: { profile: true, root: true },
+    resolve: { profile: true, root: { guestGames: true } },
   });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"my-games" | "guest-games">(
@@ -59,7 +60,7 @@ export function Dashboard() {
 
   if (!me) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-12">
+      <div className="text-center py-12">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
           <h3 className="text-xl font-semibold text-blue-800 mb-4">
             Sign In Required
@@ -77,7 +78,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="text-center space-y-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Game Dashboard</h1>
         <p>
@@ -219,23 +220,10 @@ export function Dashboard() {
       )}
 
       {/* Quick Actions */}
-      <div className="mt-8 flex justify-center">
-        <div className="flex gap-4">
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/" })}
-            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
-          >
-            Create New Game
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/" })}
-            className="px-6 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            Back Home
-          </button>
-        </div>
+      <div className="flex gap-4 justify-center">
+        <Button type="button" asChild variant="secondary">
+          <Link to="/">Create New Game</Link>
+        </Button>
       </div>
     </div>
   );

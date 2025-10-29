@@ -52,13 +52,17 @@ export const JazzAccount = co
      *  You can use it to set up the account root and any other initial CoValues you need.
      */
     if (!account.$jazz.has("root")) {
+      const myGamesList = co.list(Game).create([], account.$jazz.owner);
+      const guestGamesList = co.list(Game).create([], account.$jazz.owner);
       account.$jazz.set("root", {
-        myGames: [],
-        guestGames: [],
+        myGames: myGamesList,
+        guestGames: guestGamesList,
       });
     } else {
       // Ensure guestGames exists for accounts created before it was added to the schema
-      await account.$jazz.ensureLoaded({ resolve: { root: true } });
+      await account.$jazz.ensureLoaded({
+        resolve: { root: { guestGames: true } },
+      });
       if (account.root && !account.root.$jazz.has("guestGames")) {
         const guestGamesList = co
           .list(Game)

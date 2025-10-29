@@ -22,6 +22,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --font-display: "Nunito Sans Variable", sans-serif;
 }
 
 :root {
@@ -71,5 +72,22 @@
   }
   button[type="button"] {
     @apply cursor-pointer;
+  }
+  .editable {
+    --s: 0.1em; /* control the size of the underline */
+
+    line-height: 1.1em;
+    padding-bottom: calc(2.1 * var(--s));
+    background:
+      conic-gradient(from 135deg at top, var(--color-primary) 90deg, #0000 0)
+      left 0 bottom var(--s) / calc(2 * var(--s)) var(--s) repeat-x,
+      conic-gradient(from -45deg at bottom, var(--color-primary) 90deg, #0000 0)
+      bottom 0 left var(--s) / calc(2 * var(--s)) var(--s) repeat-x;
+    --_m:
+      linear-gradient(var(--color-background) 0 0) content-box,
+      linear-gradient(var(--color-background) 0 0) 50% / var(--_p, 100%)
+      padding-box no-repeat;
+    -webkit-mask: var(--_m);
+    mask: var(--_m);
   }
 }

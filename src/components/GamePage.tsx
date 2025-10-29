@@ -1,15 +1,18 @@
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useAccount, useCoState } from "jazz-tools/react";
 import { useCallback } from "react";
+import { toast } from "sonner";
 import { MoveSelector } from "@/components/MoveSelector";
 import { Button } from "@/components/ui/button";
 import { determineWinner } from "@/helpers";
+import CopyIcon from "@/icons/Copy.svg?react";
+import LoadingIcon from "@/icons/Loader.svg?react";
 import { Game, JazzAccount, type Move } from "@/schema";
 
 export function GamePage() {
   const { gameId } = useParams({ from: "/$gameId" });
   const { me } = useAccount(JazzAccount, {
-    resolve: { profile: true, root: true },
+    resolve: { profile: true, root: { guestGames: true } },
   });
 
   // Load the actual game from Jazz
@@ -50,9 +53,9 @@ export function GamePage() {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      alert("Game link copied to clipboard!");
+      toast.success("Game link copied to clipboard!");
     } catch {
-      alert(`Failed to copy link. Please copy manually: ${url}`);
+      toast.error(`Failed to copy link. Please copy manually: ${url}`);
     }
   };
 
@@ -60,24 +63,23 @@ export function GamePage() {
   if (game === undefined) {
     return (
       <div className="max-w-lg mx-auto text-center">
-        <div className="py-12">
-          <p>Loading game...</p>
-        </div>
+        <LoadingIcon className="size-12 animate-spin" />
       </div>
     );
   }
 
   // Game not found
-  if (game === null) {
+  if (game === null || game.isArchived) {
     return (
       <div className="max-w-lg mx-auto text-center">
         <div className="bg-red-50 rounded-lg p-8">
           <h3 className="text-xl font-semibold text-red-800 mb-4">
-            Game Not Found
+            Game {game?.isArchived ? "Archived" : "Not Found"}
           </h3>
           <p className="text-red-600 mb-6">
-            The game you're looking for doesn't exist or you don't have
-            permission to view it.
+            {game?.isArchived
+              ? "The game you're looking for has been archived."
+              : "The game you're looking for doesn't exist or you don't have permission to view it."}
           </p>
           <button
             type="button"
@@ -134,49 +136,26 @@ export function GamePage() {
   // Show waiting for player state (host view)
   if (isHost && !hasPlayerMove) {
     return (
-      <div className="max-w-lg mx-auto text-center">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-4">Game Created!</h2>
-          <div className="bg-blue-50 rounded-lg p-6 mb-6">
-            <p className="text-lg font-medium mb-4">
-              Share this link with your opponent:
-            </p>
-            <div className="bg-white border rounded-lg p-3 mb-4">
-              <code className="text-sm break-all">{window.location.href}</code>
-            </div>
-            <button
-              type="button"
-              onClick={handleShareGame}
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              Copy Link
-            </button>
+      <div className="text-center space-y-8">
+        <h2 className="text-3xl font-bold mb-4">Game Created!</h2>
+        <p className="text-lg font-medium mb-4">
+          Share this link with your opponent:
+        </p>
+        <div className="flex items-center gap-4 bg-white rounded-full px-6 py-4 text-primary-foreground">
+          <div className="grow text-left">
+            <input
+              className="text-sm break-all bg-transparent border-none outline-none w-full"
+              value={window.location.href}
+              readOnly
+              onFocus={(e) => e.target.select()}
+            />
           </div>
-          <p className="mb-2">
-            Your move: <strong>{game.hostMove}</strong>
-          </p>
-          {game.comment && (
-            <p className="italic mb-4">Question: "{game.comment}"</p>
-          )}
-          <p className="text-gray-500">
-            Waiting for your opponent to make their move...
-          </p>
-        </div>
-
-        <div className="flex gap-4">
           <button
             type="button"
-            onClick={() => navigate({ to: "/dashboard" })}
-            className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+            onClick={handleShareGame}
+            className="transition-colors"
           >
-            View Dashboard
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/" })}
-            className="px-6 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            Home
+            <CopyIcon className="size-6" />
           </button>
         </div>
       </div>
@@ -186,7 +165,7 @@ export function GamePage() {
   // Show player move selection (player view)
   if (!isHost && !hasPlayerMove) {
     return (
-      <div className="max-w-lg mx-auto">
+      <div>
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold mb-4">You've Been Challenged!</h2>
           <p className="mb-2">
@@ -195,9 +174,9 @@ export function GamePage() {
           {game.comment && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
               <p className="text-sm font-medium text-yellow-800 mb-1">
-                The question is:
+                Comment:
               </p>
-              <p className="text-yellow-900 font-medium italic">
+              <p className="text-yellow-900 font-medium italic text-left">
                 "{game.comment}"
               </p>
             </div>
@@ -211,7 +190,7 @@ export function GamePage() {
 
   // Fallback
   return (
-    <div className="max-w-lg mx-auto text-center">
+    <div className="text-center">
       <div className="bg-blue-50 rounded-lg p-8">
         <h3 className="text-xl font-semibold text-blue-800 mb-4">
           Game Not Ready
@@ -219,13 +198,6 @@ export function GamePage() {
         <p className="text-blue-600 mb-6">
           This game is not yet ready to play.
         </p>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/" })}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Go Home
-        </button>
       </div>
     </div>
   );

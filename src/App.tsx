@@ -1,6 +1,7 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { useAccount, useIsAuthenticated } from "jazz-tools/react";
 import { AuthButton } from "@/components/AuthButton";
+import Logo from "@/icons/Logo.svg?react";
 import { JazzAccount } from "@/schema";
 
 function App() {
@@ -13,35 +14,26 @@ function App() {
   return (
     <>
       <header>
-        <nav className="max-w-2xl mx-auto flex justify-between items-center p-3">
+        <nav className="flex justify-between items-center py-6">
           <div className="flex items-center gap-4">
             <Link to="/" className="font-bold text-lg">
-              <span className="text-blue-600">Hard</span> Rock Paper Scissors
+              <Logo className="w-10 h-10 text-primary" />
             </Link>
-            {isAuthenticated && (
-              <Link
-                to="/dashboard"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Dashboard
-              </Link>
-            )}
+            {isAuthenticated && <Link to="/dashboard">Dashboard</Link>}
           </div>
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
-              <span className="text-sm text-gray-600">
+              <span className="text-sm">
                 Welcome, {me?.profile?.name || "Player"}!
               </span>
             ) : (
-              <span className="text-sm text-gray-600">
-                Sign in to save your games
-              </span>
+              <span className="text-sm">Sign in to save your games</span>
             )}
             <AuthButton />
           </div>
         </nav>
       </header>
-      <main className="max-w-2xl mx-auto px-3 mt-8">
+      <main>
         <Outlet />
       </main>
     </>

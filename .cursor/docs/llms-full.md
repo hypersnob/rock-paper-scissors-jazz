@@ -10971,7 +10971,7 @@ export function CreatePlaylistModal({
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Create New Playlist
           </h2>
-          <p className="text-sm text-gray-600">Give your new playlist a name</p>
+          <p className="text-sm">Give your new playlist a name</p>
         </div>
 
         <div className="space-y-4">
@@ -11378,7 +11378,7 @@ export function MemberAccessModal(props: MemberAccessModalProps) {
       case "reader":
         return <Eye className="w-4 h-4 text-green-600" />;
       default:
-        return <User className="w-4 h-4 text-gray-600" />;
+        return <User className="w-4 h-4" />;
     }
   };
 
@@ -11555,7 +11555,7 @@ export function MemberAccessModal(props: MemberAccessModalProps) {
                   <h3 className="font-semibold text-gray-900 mb-1">
                     Invite new members
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm mb-4">
                     Generate an invite link to add new members to this playlist.
                   </p>
                   <div className="flex items-center gap-3">
@@ -11956,7 +11956,7 @@ export function PlayerControls({ mediaPlayer }: { mediaPlayer: MediaPlayer }) {
         <h4 className="font-medium text-blue-800 text-base sm:text-base truncate max-w-80 sm:max-w-80">
           {activeTrackTitle}
         </h4>
-        <p className="hidden sm:block text-xs sm:text-sm text-gray-600 truncate sm:max-w-80">
+        <p className="hidden sm:block text-xs sm:text-sm truncate sm:max-w-80">
           {activePlaylistTitle || "All tracks"}
         </p>
       </div>
@@ -12019,7 +12019,7 @@ export function PlaylistMembers({
             />
           ))}
         </div>
-        <span className="text-sm text-gray-600 ml-2">
+        <span className="text-sm ml-2">
           ({memberIds.length} member{memberIds.length !== 1 ? "s" : ""})
         </span>
       </button>
@@ -12976,7 +12976,7 @@ export function WelcomeScreen() {
           />
         </div>
         <div className="lg:hidden pt-4 flex justify-end items-center w-full gap-2">
-          <div className="text-sm font-semibold text-gray-600">
+          <div className="text-sm font-semibold">
             Already a user?
           </div>
           <Button onClick={handleLogin} size="sm">
@@ -13012,7 +13012,7 @@ export function WelcomeScreen() {
 
               {/* Login Button */}
               <div className="pt-4">
-                <p className="text-sm font-semibold text-gray-600 mb-2">
+                <p className="text-sm font-semibold mb-2">
                   Already a user?
                 </p>
                 <Button

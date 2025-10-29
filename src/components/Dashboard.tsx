@@ -35,10 +35,8 @@ export function Dashboard() {
   // };
 
   const getGameStatus = (game: GameType) => {
-    if (!game)
-      return { text: "Unknown", className: "bg-gray-100 text-gray-600" };
-    if (game.isArchived)
-      return { text: "Archived", className: "bg-gray-100 text-gray-600" };
+    if (!game) return { text: "Unknown", className: "bg-gray-100" };
+    if (game.isArchived) return { text: "Archived", className: "bg-gray-100" };
     if (game.winner)
       return { text: "Completed", className: "bg-green-100 text-green-700" };
     return {
@@ -82,7 +80,7 @@ export function Dashboard() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Game Dashboard</h1>
-        <p className="text-gray-600">
+        <p>
           Welcome back,{" "}
           <span className="font-medium">{me.profile?.name || "Player"}</span>!
         </p>
@@ -123,7 +121,7 @@ export function Dashboard() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No games yet
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6">
               {activeTab === "my-games"
                 ? "Create your first game and challenge someone!"
                 : "No games played as a guest yet."}
@@ -176,9 +174,9 @@ export function Dashboard() {
                             <p className="font-medium text-gray-900">
                               {game.hostMove && `Your move: ${game.hostMove}`}
                             </p>
-                            {game.question && (
-                              <p className="text-sm text-gray-600 italic mt-1">
-                                "{game.question}"
+                            {game.comment && (
+                              <p className="text-sm italic mt-1">
+                                "{game.comment}"
                               </p>
                             )}
                             {game.dateCompleted && (
@@ -193,7 +191,7 @@ export function Dashboard() {
                               <p
                                 className={`font-semibold ${
                                   game.winner === "DRAW"
-                                    ? "text-gray-600"
+                                    ? "text-foreground"
                                     : (activeTab === "my-games" &&
                                           game.winner === "HOST") ||
                                         (activeTab === "guest-games" &&

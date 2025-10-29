@@ -17,7 +17,7 @@ export const Game = co.map({
   hostMove: Move,
   playerMove: Move.optional(),
   winner: Winner.optional(),
-  question: z.string().optional(),
+  comment: z.string().optional(),
   dateCreated: z.string(),
   dateCompleted: z.string().optional(),
   isArchived: z.boolean().optional(),

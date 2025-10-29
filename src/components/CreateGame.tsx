@@ -1,14 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Group } from "jazz-tools";
 import { useAccount } from "jazz-tools/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Game, JazzAccount, type Move } from "../schema.ts";
-
-const MOVES: { move: Move; emoji: string; label: string }[] = [
-  { move: "ROCK", emoji: "🪨", label: "Rock" },
-  { move: "PAPER", emoji: "📄", label: "Paper" },
-  { move: "SCISSORS", emoji: "✂️", label: "Scissors" },
-];
+import { MoveSelector } from "./MoveSelector.tsx";
 
 export function CreateGame() {
   const { me } = useAccount(JazzAccount, {
@@ -16,9 +11,7 @@ export function CreateGame() {
   });
 
   const navigate = useNavigate();
-  const [selectedMove, setSelectedMove] = useState<Move | null>(null);
   const [question, setQuestion] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
   const [playerName, setPlayerName] = useState(me?.profile?.name || "");
 
   // Sync local state with profile when profile loads or changes
@@ -28,54 +21,54 @@ export function CreateGame() {
     }
   }, [me?.profile?.name]);
 
-  const handleCreateGame = async () => {
-    if (!selectedMove || !me?.root || !me.root.myGames) return;
+  const handleCreateGame = useCallback(
+    async (move: Move) => {
+      if (!me?.root || !me.root.myGames) return;
 
-    setIsCreating(true);
+      try {
+        // Create a group for sharing the game
+        const gameGroup = Group.create();
+        gameGroup.addMember("everyone", "writer"); // Make game writable by everyone so guests can set their move
 
-    try {
-      // Create a group for sharing the game
-      const gameGroup = Group.create();
-      gameGroup.addMember("everyone", "writer"); // Make game writable by everyone so guests can set their move
+        // Create new game with proper permissions
+        const game = Game.create(
+          {
+            hostMove: move,
+            playerMove: undefined,
+            winner: undefined,
+            comment: question.trim() || undefined,
+            dateCreated: new Date().toISOString(),
+            dateCompleted: undefined,
+            isArchived: false,
+          },
+          gameGroup
+        );
 
-      // Create new game with proper permissions
-      const game = Game.create(
-        {
-          hostMove: selectedMove,
-          playerMove: undefined,
-          winner: undefined,
-          question: question.trim() || undefined,
-          dateCreated: new Date().toISOString(),
-          dateCompleted: undefined,
-          isArchived: false,
-        },
-        gameGroup
-      );
+        // Add game to user's games using the $jazz.push method
+        // TypeScript thinks this could be null but migration ensures it exists
+        me.root.myGames.$jazz.push(game);
 
-      // Add game to user's games using the $jazz.push method
-      // TypeScript thinks this could be null but migration ensures it exists
-      me.root.myGames.$jazz.push(game);
-
-      // Navigate to game page using the game's Jazz ID
-      navigate({
-        to: "/$gameId",
-        params: { gameId: game.$jazz.id },
-      });
-    } catch (error) {
-      // biome-ignore lint: for debugging
-      console.error("Failed to create game:", error);
-    } finally {
-      setIsCreating(false);
-    }
-  };
+        // Navigate to game page using the game's Jazz ID
+        navigate({
+          to: "/$gameId",
+          params: { gameId: game.$jazz.id },
+        });
+      } catch (error) {
+        // biome-ignore lint: for debugging
+        console.error("Failed to create game:", error);
+      } finally {
+      }
+    },
+    [me, question, navigate]
+  );
 
   return (
-    <div className="max-w-lg mx-auto">
+    <div>
       <h2 className="text-3xl font-bold text-center mb-8">Create New Game</h2>
 
       {!me ? (
         <div className="text-center py-8">
-          <p className="text-gray-600 mb-4">Please sign in to create a game</p>
+          <p className="mb-4">Please sign in to create a game</p>
         </div>
       ) : (
         <>
@@ -103,35 +96,14 @@ export function CreateGame() {
             />
           </div>
 
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              Choose Your Move
-            </h3>
-            <div className="grid grid-cols-3 gap-4">
-              {MOVES.map(({ move, emoji, label }) => (
-                <button
-                  type="button"
-                  key={move}
-                  onClick={() => setSelectedMove(move)}
-                  className={`p-6 rounded-lg border-2 transition-all transform hover:scale-105 ${
-                    selectedMove === move
-                      ? "border-blue-500 bg-blue-50 shadow-lg scale-105"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  }`}
-                >
-                  <div className="text-4xl mb-2">{emoji}</div>
-                  <div className="font-medium">{label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+          <MoveSelector onMoveSelect={handleCreateGame} />
 
           <div className="mb-8">
             <label
               htmlFor="question"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Optional Question (e.g., "My place or yours?")
+              Optional Comment (e.g., "My place or yours?")
             </label>
             <input
               id="question"
@@ -146,30 +118,6 @@ export function CreateGame() {
               {question.length}/100 characters
             </p>
           </div>
-
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={handleCreateGame}
-              disabled={!selectedMove || isCreating}
-              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${
-                selectedMove && !isCreating
-                  ? "bg-blue-500 text-white hover:bg-blue-600"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-              }`}
-            >
-              {isCreating ? "Creating Game..." : "Create Game"}
-            </button>
-          </div>
-
-          {selectedMove && (
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg text-center">
-              <p className="text-sm text-blue-700">
-                You selected <strong>{selectedMove}</strong>. Your opponent
-                won't see your choice until they make their move!
-              </p>
-            </div>
-          )}
         </>
       )}
     </div>

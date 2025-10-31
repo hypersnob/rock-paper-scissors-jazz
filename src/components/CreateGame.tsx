@@ -4,8 +4,8 @@ import { useAccount } from "jazz-tools/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePlayerName } from "@/App";
 import { MoveSelector } from "@/components/MoveSelector.tsx";
-import { Game, JazzAccount, type Move } from "@/schema.ts";
 import CloseIcon from "@/icons/Close.svg?react";
+import { Game, JazzAccount, type Move } from "@/schema.ts";
 
 export function CreateGame() {
   const { me } = useAccount(JazzAccount, {
@@ -59,7 +59,7 @@ export function CreateGame() {
             dateCompleted: undefined,
             isArchived: false,
           },
-          gameGroup,
+          gameGroup
         );
 
         // Add game to user's games using the $jazz.push method
@@ -77,7 +77,7 @@ export function CreateGame() {
       } finally {
       }
     },
-    [me, question, navigate],
+    [me, question, navigate]
   );
 
   return (

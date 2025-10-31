@@ -49,7 +49,7 @@ export function MoveSelector({ onMoveSelect }: MoveSelectorProps) {
             className={cn(
               "group relative text-primary-foreground transition-all transform flex flex-col items-center justify-center p-4 aspect-[cos(30deg)] basis-1/2 md:basis-1/3",
               index === MOVES.length - 1 &&
-                "mx-auto md:mx-0 -mt-[12.5%] md:mt-0",
+                "mx-auto md:mx-0 -mt-[12.5%] md:mt-0"
             )}
             style={
               {

@@ -4,10 +4,10 @@ import { useCallback, useState } from "react";
 import { MoveSelector } from "@/components/MoveSelector";
 import { Button } from "@/components/ui/button";
 import { determineWinner } from "@/helpers";
+import CheckIcon from "@/icons/Check.svg?react";
 import CopyIcon from "@/icons/Copy.svg?react";
 import LoadingIcon from "@/icons/Loader.svg?react";
 import { Game, JazzAccount, type Move } from "@/schema";
-import CheckIcon from "@/icons/Check.svg?react";
 
 export function GamePage() {
   const { gameId } = useParams({ from: "/$gameId" });
@@ -47,7 +47,7 @@ export function GamePage() {
         console.error("Failed to submit move:", err);
       }
     },
-    [game, me],
+    [game, me]
   );
 
   const handleShareGame = async () => {
@@ -99,7 +99,7 @@ export function GamePage() {
   const isHost =
     me &&
     game.$jazz.owner.members.some(
-      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin",
+      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin"
     );
 
   const isCompleted = !!game.winner;
@@ -111,8 +111,8 @@ export function GamePage() {
     const userWon = isDraw
       ? false
       : isHost
-      ? game.winner === "HOST"
-      : game.winner === "PLAYER";
+        ? game.winner === "HOST"
+        : game.winner === "PLAYER";
 
     return (
       <div className="max-w-lg mx-auto">
@@ -121,8 +121,8 @@ export function GamePage() {
             {isDraw
               ? "🤝 It's a Draw!"
               : userWon
-              ? "🎉 You Won!"
-              : "😔 You Lost"}
+                ? "🎉 You Won!"
+                : "😔 You Lost"}
           </h2>
         </div>
 

@@ -2,10 +2,10 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AuthButton } from "@/components/AuthButton";
-import Logo from "@/icons/Logo.svg?react";
-import { JazzAccount } from "@/schema";
 import { Button } from "@/components/ui/button";
 import ListIcon from "@/icons/List.svg?react";
+import Logo from "@/icons/Logo.svg?react";
+import { JazzAccount } from "@/schema";
 
 type PlayerNameContextType = {
   playerName: string;
@@ -13,7 +13,7 @@ type PlayerNameContextType = {
 };
 
 const PlayerNameContext = createContext<PlayerNameContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export function usePlayerName() {
@@ -29,7 +29,7 @@ function App() {
     resolve: { profile: true },
   });
   const [playerName, setPlayerName] = useState(
-    me?.profile?.name || "Anonymous Player",
+    me?.profile?.name || "Anonymous Player"
   );
 
   // Sync local state with profile when profile loads or changes

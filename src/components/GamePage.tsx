@@ -1,19 +1,20 @@
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useAccount, useCoState } from "jazz-tools/react";
-import { useCallback } from "react";
-import { toast } from "sonner";
+import { useCallback, useState } from "react";
 import { MoveSelector } from "@/components/MoveSelector";
 import { Button } from "@/components/ui/button";
 import { determineWinner } from "@/helpers";
 import CopyIcon from "@/icons/Copy.svg?react";
 import LoadingIcon from "@/icons/Loader.svg?react";
 import { Game, JazzAccount, type Move } from "@/schema";
+import CheckIcon from "@/icons/Check.svg?react";
 
 export function GamePage() {
   const { gameId } = useParams({ from: "/$gameId" });
   const { me } = useAccount(JazzAccount, {
     resolve: { profile: true, root: { guestGames: true } },
   });
+  const [copied, setCopied] = useState(false);
 
   // Load the actual game from Jazz
   const game = useCoState(Game, gameId);
@@ -46,16 +47,17 @@ export function GamePage() {
         console.error("Failed to submit move:", err);
       }
     },
-    [game, me]
+    [game, me],
   );
 
   const handleShareGame = async () => {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Game link copied to clipboard!");
-    } catch {
-      toast.error(`Failed to copy link. Please copy manually: ${url}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 4000);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
     }
   };
 
@@ -97,7 +99,7 @@ export function GamePage() {
   const isHost =
     me &&
     game.$jazz.owner.members.some(
-      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin"
+      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin",
     );
 
   const isCompleted = !!game.winner;
@@ -109,8 +111,8 @@ export function GamePage() {
     const userWon = isDraw
       ? false
       : isHost
-        ? game.winner === "HOST"
-        : game.winner === "PLAYER";
+      ? game.winner === "HOST"
+      : game.winner === "PLAYER";
 
     return (
       <div className="max-w-lg mx-auto">
@@ -119,8 +121,8 @@ export function GamePage() {
             {isDraw
               ? "🤝 It's a Draw!"
               : userWon
-                ? "🎉 You Won!"
-                : "😔 You Lost"}
+              ? "🎉 You Won!"
+              : "😔 You Lost"}
           </h2>
         </div>
 
@@ -136,9 +138,11 @@ export function GamePage() {
   // Show waiting for player state (host view)
   if (isHost && !hasPlayerMove) {
     return (
-      <div className="text-center space-y-8">
-        <h2 className="text-3xl font-bold mb-4">Game Created!</h2>
-        <p className="text-lg font-medium mb-4">
+      <div className="text-center">
+        <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
+          Game Created!
+        </h2>
+        <p className="text-lg text-muted mb-6">
           Share this link with your opponent:
         </p>
         <div className="flex items-center gap-4 bg-white rounded-full px-6 py-4 text-primary-foreground">
@@ -155,7 +159,11 @@ export function GamePage() {
             onClick={handleShareGame}
             className="transition-colors"
           >
-            <CopyIcon className="size-6" />
+            {copied ? (
+              <CheckIcon className="size-6" />
+            ) : (
+              <CopyIcon className="size-6" />
+            )}
           </button>
         </div>
       </div>

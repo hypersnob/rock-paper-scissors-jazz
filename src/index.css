@@ -33,9 +33,9 @@
   --primary-foreground: oklch(0.1923 0.035 272.67);
   --secondary: oklch(0.6319 0.0755 272.63);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --muted: oklch(0.5735 0.0913 272.63);
+  --muted-foreground: oklch(0.1923 0.035 272.67);
+  --accent: oklch(0.2814 0.035 272.67);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: transparent;
@@ -67,9 +67,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  .container {
-    @apply mx-auto px-6 max-w-5xl!;
-  }
   button[type="button"] {
     @apply cursor-pointer;
   }
@@ -78,15 +75,17 @@
 
     line-height: 1.1em;
     padding-bottom: calc(2.1 * var(--s));
-    background:
-      conic-gradient(from 135deg at top, var(--color-primary) 90deg, #0000 0)
-      left 0 bottom var(--s) / calc(2 * var(--s)) var(--s) repeat-x,
+    background: conic-gradient(
+          from 135deg at top,
+          var(--color-primary) 90deg,
+          #0000 0
+        )
+        left 0 bottom var(--s) / calc(2 * var(--s)) var(--s) repeat-x,
       conic-gradient(from -45deg at bottom, var(--color-primary) 90deg, #0000 0)
-      bottom 0 left var(--s) / calc(2 * var(--s)) var(--s) repeat-x;
-    --_m:
-      linear-gradient(var(--color-background) 0 0) content-box,
+        bottom 0 left var(--s) / calc(2 * var(--s)) var(--s) repeat-x;
+    --_m: linear-gradient(var(--color-background) 0 0) content-box,
       linear-gradient(var(--color-background) 0 0) 50% / var(--_p, 100%)
-      padding-box no-repeat;
+        padding-box no-repeat;
     -webkit-mask: var(--_m);
     mask: var(--_m);
   }

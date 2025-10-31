@@ -1,31 +1,68 @@
 import { Link, Outlet } from "@tanstack/react-router";
+import { useAccount } from "jazz-tools/react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AuthButton } from "@/components/AuthButton";
 import Logo from "@/icons/Logo.svg?react";
+import { JazzAccount } from "@/schema";
+import { Button } from "@/components/ui/button";
+import ListIcon from "@/icons/List.svg?react";
+
+type PlayerNameContextType = {
+  playerName: string;
+  setPlayerName: (name: string) => void;
+};
+
+const PlayerNameContext = createContext<PlayerNameContextType | undefined>(
+  undefined,
+);
+
+export function usePlayerName() {
+  const context = useContext(PlayerNameContext);
+  if (context === undefined) {
+    throw new Error("usePlayerName must be used within a PlayerNameProvider");
+  }
+  return context;
+}
 
 function App() {
+  const { me } = useAccount(JazzAccount, {
+    resolve: { profile: true },
+  });
+  const [playerName, setPlayerName] = useState(
+    me?.profile?.name || "Anonymous Player",
+  );
+
+  // Sync local state with profile when profile loads or changes
+  useEffect(() => {
+    if (me?.profile?.name) {
+      setPlayerName(me.profile.name);
+    }
+  }, [me?.profile?.name]);
+
   return (
-    <>
-      <header className="py-6">
+    <PlayerNameContext.Provider value={{ playerName, setPlayerName }}>
+      <header className="py-6 container mx-auto">
         <nav className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link to="/" className="font-bold text-lg">
-              <Logo className="w-10 h-10 text-primary hover:text-white transition-colors duration-300" />
+              <Logo className="size-9 text-primary hover:text-white transition-colors duration-300" />
             </Link>
           </div>
 
-          <AuthButton />
+          <AuthButton playerName={playerName} />
         </nav>
       </header>
-      <main className="flex flex-col justify-center grow">
+      <main className="flex flex-col justify-center grow container mx-auto xl:max-w-5xl">
         <Outlet />
       </main>
-      <footer className="text-center text-sm text-muted-foreground py-6">
-        <p>
-          &copy; {new Date().getFullYear()} Hard Rock Paper Scissors. All rights
-          reserved.
-        </p>
+      <footer className="flex justify-between items-center py-6 container mx-auto">
+        <Button variant="ghost" asChild>
+          <Link to="/dashboard">
+            <ListIcon className="size-6" />
+          </Link>
+        </Button>
       </footer>
-    </>
+    </PlayerNameContext.Provider>
   );
 }
 

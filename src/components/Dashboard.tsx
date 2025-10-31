@@ -2,8 +2,11 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
 import { useState } from "react";
 import { formatGameDate } from "@/helpers";
-import { type GameType, JazzAccount } from "@/schema";
+import { type GameType, JazzAccount, type Move } from "@/schema";
 import { Button } from "./ui/button";
+import { TabItem } from "./ui/tab-item";
+import { cn } from "@/lib/utils";
+import { MoveIcon } from "./MoveIcon";
 
 export function Dashboard() {
   const { me } = useAccount(JazzAccount, {
@@ -11,7 +14,7 @@ export function Dashboard() {
   });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"my-games" | "guest-games">(
-    "my-games"
+    "my-games",
   );
 
   // Get games from Jazz - these are real CoLists that will contain game data
@@ -36,13 +39,13 @@ export function Dashboard() {
   // };
 
   const getGameStatus = (game: GameType) => {
-    if (!game) return { text: "Unknown", className: "bg-gray-100" };
-    if (game.isArchived) return { text: "Archived", className: "bg-gray-100" };
+    if (!game) return { text: "Unknown", className: "bg-muted" };
+    if (game.isArchived) return { text: "Archived", className: "bg-slate-300" };
     if (game.winner)
-      return { text: "Completed", className: "bg-green-100 text-green-700" };
+      return { text: "Completed", className: "bg-teal-800 text-teal-500" };
     return {
       text: "Waiting for opponent",
-      className: "bg-yellow-100 text-yellow-700",
+      className: "bg-orange-800 text-orange-300",
     };
   };
 
@@ -60,15 +63,13 @@ export function Dashboard() {
 
   if (!me) {
     return (
-      <div className="text-center py-12">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
-          <h3 className="text-xl font-semibold text-blue-800 mb-4">
+      <div className="text-center py-12 space-y-4">
+        <div>
+          <h3 className="text-4xl font-display font-black text-secondary mb-4">
             Sign In Required
           </h3>
-          <p className="text-blue-600 mb-6">
-            Please sign in to view your game dashboard and history.
-          </p>
-          <p className="text-sm text-blue-500">
+          <p>Please sign in to view your game dashboard and history.</p>
+          <p>
             Your games will be saved to your account and accessible across
             devices.
           </p>
@@ -80,45 +81,39 @@ export function Dashboard() {
   return (
     <div className="text-center space-y-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Game Dashboard</h1>
-        <p>
+        <h1 className="text-4xl lg:text-5xl font-display font-black mb-2">
+          Game Dashboard
+        </h1>
+        <p className="text-lg text-muted">
           Welcome back,{" "}
           <span className="font-medium">{me.profile?.name || "Player"}</span>!
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="-mb-px flex space-x-8">
-          <button
-            type="button"
-            onClick={() => setActiveTab("my-games")}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "my-games"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
-            My Games ({myGames.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("guest-games")}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "guest-games"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
-            Guest Games ({guestGames.length})
-          </button>
-        </nav>
-      </div>
+      <nav className="flex gap-4">
+        <TabItem
+          isActive={activeTab === "my-games"}
+          onClick={() => setActiveTab("my-games")}
+          count={myGames.length}
+          className="grow"
+        >
+          My Games
+        </TabItem>
+        <TabItem
+          isActive={activeTab === "guest-games"}
+          onClick={() => setActiveTab("guest-games")}
+          count={guestGames.length}
+          className="grow"
+        >
+          Guest Games
+        </TabItem>
+      </nav>
 
       {/* Game List */}
       {currentGames.length === 0 ? (
         <div className="text-center py-12">
-          <div className="bg-gray-50 rounded-lg p-8">
+          <div className="bg-secondary rounded-lg p-8">
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No games yet
             </h3>
@@ -128,13 +123,9 @@ export function Dashboard() {
                 : "No games played as a guest yet."}
             </p>
             {activeTab === "my-games" && (
-              <button
-                type="button"
-                onClick={() => navigate({ to: "/" })}
-                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-              >
+              <Button type="button" onClick={() => navigate({ to: "/" })}>
                 Create New Game
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -153,58 +144,60 @@ export function Dashboard() {
                   <div
                     key={gameId || index}
                     onClick={() => handleGameClick(game)}
-                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    className="bg-accent hover:bg-accent/80 rounded-full p-4 transition cursor-pointer"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="shrink-0 p-4 bg-secondary rounded-full aspect-square text-secondary-foreground">
+                        <MoveIcon
+                          className="size-10"
+                          move={
+                            activeTab === "my-games"
+                              ? game.hostMove
+                              : (game.playerMove as Move)
+                          }
+                        />
+                      </div>
+                      <div className="grow flex">
+                        <div className="flex items-center gap-3 mb-2 grow">
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${status.className}`}
+                            className={cn(
+                              "px-2 py-1 rounded-full text-xs font-medium",
+                              status.className,
+                            )}
                           >
                             {status.text}
                           </span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-muted">
                             {game.dateCreated
                               ? formatGameDate(game.dateCreated)
                               : "No date"}
                           </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-gray-900">
-                              {game.hostMove && `Your move: ${game.hostMove}`}
-                            </p>
                             {game.comment && (
                               <p className="text-sm italic mt-1">
                                 "{game.comment}"
                               </p>
                             )}
-                            {game.dateCompleted && (
-                              <p className="text-xs text-gray-500 mt-1">
-                                Completed {formatGameDate(game.dateCompleted)}
-                              </p>
-                            )}
                           </div>
+                        </div>
 
-                          <div className="text-right">
-                            {game.winner && (
-                              <p
-                                className={`font-semibold ${
-                                  game.winner === "DRAW"
-                                    ? "text-foreground"
-                                    : (activeTab === "my-games" &&
-                                          game.winner === "HOST") ||
-                                        (activeTab === "guest-games" &&
-                                          game.winner === "PLAYER")
-                                      ? "text-green-600"
-                                      : "text-red-600"
-                                }`}
-                              >
-                                {getWinnerText(game)}
-                              </p>
-                            )}
-                          </div>
+                        <div className="flex items-center justify-between">
+                          {game.winner && (
+                            <p
+                              className={`font-semibold ${
+                                game.winner === "DRAW"
+                                  ? "text-foreground"
+                                  : (activeTab === "my-games" &&
+                                      game.winner === "HOST") ||
+                                    (activeTab === "guest-games" &&
+                                      game.winner === "PLAYER")
+                                  ? "text-teal-600"
+                                  : "text-destructive"
+                              }`}
+                            >
+                              {getWinnerText(game)}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -26,7 +26,11 @@ export function MoveSelector({ onMoveSelect }: MoveSelectorProps) {
         <title>Goo effect</title>
         <defs>
           <filter id="goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="15"
+              result="blur"
+            />
             <feColorMatrix
               in="blur"
               mode="matrix"
@@ -43,9 +47,9 @@ export function MoveSelector({ onMoveSelect }: MoveSelectorProps) {
           <div
             key={move}
             className={cn(
-              "relative text-primary-foreground transition-all transform group flex flex-col items-center justify-center p-4 aspect-[cos(30deg)] basis-1/2 md:basis-1/3",
+              "group relative text-primary-foreground transition-all transform flex flex-col items-center justify-center p-4 aspect-[cos(30deg)] basis-1/2 md:basis-1/3",
               index === MOVES.length - 1 &&
-                "mx-auto md:mx-0 -mt-[12.5%] md:mt-0"
+                "mx-auto md:mx-0 -mt-[12.5%] md:mt-0",
             )}
             style={
               {
@@ -65,7 +69,7 @@ export function MoveSelector({ onMoveSelect }: MoveSelectorProps) {
               />
             </button>
             <div
-              className="absolute inset-4 bg-secondary group-hover:bg-primary transition-all transform pointer-events-none"
+              className="group-hover:bg-primary absolute inset-4 bg-secondary transition-all transform pointer-events-none"
               style={{
                 clipPath:
                   "polygon(0% 25%,0% 75%,50% 100%,100% 75%,100% 25%,50% 0%)",

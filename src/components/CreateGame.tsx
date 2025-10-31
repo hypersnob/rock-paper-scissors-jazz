@@ -2,8 +2,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { Group } from "jazz-tools";
 import { useAccount } from "jazz-tools/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Game, JazzAccount, type Move } from "../schema.ts";
-import { MoveSelector } from "./MoveSelector.tsx";
+import { usePlayerName } from "@/App";
+import { MoveSelector } from "@/components/MoveSelector.tsx";
+import { Game, JazzAccount, type Move } from "@/schema.ts";
+import CloseIcon from "@/icons/Close.svg?react";
 
 export function CreateGame() {
   const { me } = useAccount(JazzAccount, {
@@ -11,17 +13,10 @@ export function CreateGame() {
   });
   const editableRef = useRef<HTMLSpanElement>(null);
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+  const { playerName, setPlayerName } = usePlayerName();
 
   const navigate = useNavigate();
   const [question, setQuestion] = useState("");
-  const [playerName, setPlayerName] = useState(me?.profile?.name || "");
-
-  // Sync local state with profile when profile loads or changes
-  useEffect(() => {
-    if (me?.profile?.name) {
-      setPlayerName(me.profile.name);
-    }
-  }, [me?.profile?.name]);
 
   // Restore cursor position after re-renders
   useEffect(() => {
@@ -64,7 +59,7 @@ export function CreateGame() {
             dateCompleted: undefined,
             isArchived: false,
           },
-          gameGroup
+          gameGroup,
         );
 
         // Add game to user's games using the $jazz.push method
@@ -82,7 +77,7 @@ export function CreateGame() {
       } finally {
       }
     },
-    [me, question, navigate]
+    [me, question, navigate],
   );
 
   return (
@@ -122,7 +117,7 @@ export function CreateGame() {
                 if (!me?.profile?.name) return;
                 me.profile.$jazz.set("name", "Anonymous Player");
               }}
-              className="outline-none min-w-[100px] text-white inline-block editable"
+              className="outline-none min-w-20 text-white inline-block editable"
             >
               {playerName}
             </span>
@@ -131,25 +126,39 @@ export function CreateGame() {
 
           <MoveSelector onMoveSelect={handleCreateGame} />
 
-          <div className="mb-8">
-            <label
-              htmlFor="question"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Optional Comment (e.g., "My place or yours?")
-            </label>
-            <input
-              id="question"
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Add a question for the loser to answer..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              maxLength={100}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {question.length}/100 characters
-            </p>
+          <div className="py-12">
+            <div className="relative bg-foreground rounded-full py-4 px-5 mb-4 xl:max-w-2/3 mx-auto flex items-center gap-4">
+              <input
+                id="question"
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder=" "
+                maxLength={100}
+                className="peer outline-none text-background grow"
+              />
+              <label
+                htmlFor="question"
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-all duration-150 ease-out
+                peer-focus:-top-5 peer-focus:text-foreground peer-[:not(:placeholder-shown)]:-top-5 peer-[:not(:placeholder-shown)]:text-foreground"
+              >
+                Optional Comment (e.g., "My place or yours?"){" "}
+                {question && (
+                  <span className="text-sm text-foreground/75">
+                    {question.length}/100 characters
+                  </span>
+                )}
+              </label>
+              {question && (
+                <button
+                  type="button"
+                  className="shrink-0 text-muted hover:text-background transition-all duration-150 ease-out"
+                  onClick={() => setQuestion("")}
+                >
+                  <CloseIcon className="size-3" />
+                </button>
+              )}
+            </div>
           </div>
         </>
       )}

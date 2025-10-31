@@ -29,13 +29,14 @@ export function determineWinner(hostMove: Move, playerMove: Move): Winner {
 }
 
 export function formatGameDate(dateString: string): string {
-  return new Date(dateString).toLocaleString("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const d = new Date(dateString);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const day = pad(d.getDate());
+  const month = pad(d.getMonth() + 1);
+  const year = d.getFullYear();
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 
 // Helper to get the host's account ID from a game's owner

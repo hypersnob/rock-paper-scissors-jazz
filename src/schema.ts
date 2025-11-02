@@ -81,8 +81,8 @@ export const JazzAccount = co
           {
             name: "Anonymous Player",
           },
-          group
-        )
+          group,
+        ),
       );
     }
   });

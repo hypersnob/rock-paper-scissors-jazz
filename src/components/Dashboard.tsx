@@ -14,7 +14,7 @@ export function Dashboard() {
   });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"my-games" | "guest-games">(
-    "my-games"
+    "my-games",
   );
 
   // Get games from Jazz - these are real CoLists that will contain game data
@@ -134,7 +134,7 @@ export function Dashboard() {
                   <div
                     key={gameId || index}
                     onClick={() => handleGameClick(game)}
-                    className="flex items-start gap-4 py-4 lg:py-6"
+                    className="flex items-start gap-4 py-4 lg:py-6 cursor-pointer"
                   >
                     <div className="shrink-0 p-3 bg-secondary rounded-full aspect-square text-secondary-foreground">
                       <MoveIcon
@@ -152,7 +152,7 @@ export function Dashboard() {
                           <span
                             className={cn(
                               "px-2 py-1 rounded-full text-xs font-medium",
-                              status.className
+                              status.className,
                             )}
                           >
                             {status.text}{" "}
@@ -177,8 +177,8 @@ export function Dashboard() {
                               game.winner === "DRAW"
                                 ? "text-muted"
                                 : game.winner === "HOST"
-                                  ? "text-teal-500"
-                                  : "text-destructive"
+                                ? "text-teal-500"
+                                : "text-destructive",
                             )}
                           >
                             {getWinnerText(game)}

@@ -12,15 +12,24 @@ export type Move = z.infer<typeof Move>;
 export const Winner = z.enum(["HOST", "PLAYER", "DRAW"]);
 export type Winner = z.infer<typeof Winner>;
 
-// Game schema - using Account references instead of string IDs
+// Play schema - represents a single play/round within a game
+// Note: CoFeeds automatically track the creator via .by property, no need to store opponentAccount
+export const Play = co.map({
+  playerMove: Move,
+  winner: Winner,
+  datePlayed: z.string(),
+  hostMoveSnapshot: Move.optional(), // Store host's move for historical record
+});
+
+export type PlayType = co.loaded<typeof Play>;
+
+// Game schema - simplified to contain only host info and a feed of plays
 export const Game = co.map({
   hostMove: Move,
-  playerMove: Move.optional(),
-  winner: Winner.optional(),
   comment: z.string().optional(),
   dateCreated: z.string(),
-  dateCompleted: z.string().optional(),
   isArchived: z.boolean().optional(),
+  plays: co.feed(Play),
 });
 
 export type GameType = co.loaded<typeof Game>;
@@ -81,8 +90,8 @@ export const JazzAccount = co
           {
             name: "Anonymous Player",
           },
-          group,
-        ),
+          group
+        )
       );
     }
   });

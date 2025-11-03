@@ -1,25 +1,39 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatGameDate } from "@/helpers";
 import { cn } from "@/lib/utils";
-import { type GameType, JazzAccount, type Move } from "@/schema";
+import { type GameType, JazzAccount } from "@/schema";
 import { MoveIcon } from "./MoveIcon";
 import { Button } from "./ui/button";
 import { TabItem } from "./ui/tab-item";
 
 export function Dashboard() {
   const { me } = useAccount(JazzAccount, {
-    resolve: { profile: true, root: { guestGames: true } },
+    resolve: {
+      profile: true,
+      root: {
+        guestGames: { $each: { plays: true } },
+        myGames: { $each: { plays: true } },
+      },
+    },
   });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"my-games" | "guest-games">(
-    "my-games",
+    "my-games"
   );
 
   // Get games from Jazz - these are real CoLists that will contain game data
   const myGames = me?.root?.myGames || [];
   const guestGames = me?.root?.guestGames || [];
+
+  // Auto-switch to guest-games tab if user has no games but has guest games
+  useEffect(() => {
+    if (myGames.length === 0 && guestGames.length > 0) {
+      setActiveTab("guest-games");
+    }
+  }, [myGames.length, guestGames.length]);
+
   const currentGames = activeTab === "my-games" ? myGames : guestGames;
 
   const handleGameClick = (game: GameType) => {
@@ -30,35 +44,13 @@ export function Dashboard() {
     });
   };
 
-  const handleArchiveGame = (game: any, e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Archive game by updating its isArchived property
-    if (game?.$jazz) {
-      game.$jazz.set("isArchived", true);
-    }
-  };
-
   const getGameStatus = (game: GameType) => {
     if (!game) return { text: "Unknown", className: "bg-muted" };
     if (game.isArchived) return { text: "Archived", className: "bg-slate-300" };
-    if (game.winner)
-      return { text: "Completed", className: "bg-teal-800 text-teal-500" };
     return {
-      text: "Waiting for opponent",
-      className: "bg-orange-900 text-orange-500",
+      text: "Active",
+      className: "bg-green-800 text-green-500",
     };
-  };
-
-  const getWinnerText = (game: GameType) => {
-    if (!game.winner) return "";
-    const isMyGame = activeTab === "my-games";
-    const userWon =
-      (isMyGame && game.winner === "HOST") ||
-      (!isMyGame && game.winner === "PLAYER");
-    const isDraw = game.winner === "DRAW";
-
-    if (isDraw) return "🤝 Draw";
-    return userWon ? "🎉 You Won!" : "😔 You Lost";
   };
 
   if (!me) {
@@ -91,7 +83,7 @@ export function Dashboard() {
       </div>
 
       {/* Tab Navigation */}
-      {currentGames.length > 0 && (
+      {(myGames.length > 0 || guestGames.length > 0) && (
         <nav className="flex gap-4">
           <TabItem
             isActive={activeTab === "my-games"}
@@ -124,27 +116,30 @@ export function Dashboard() {
           {Array.isArray(currentGames) && currentGames.length > 0 ? (
             currentGames
               .filter((game: GameType) => game != null)
-              .map((game: GameType, index: number) => {
+              .map((game: GameType) => {
                 const status = getGameStatus(game);
                 const gameId = game.$jazz?.id;
 
                 if (!gameId) return null;
 
+                // Get player's move for guest games
+                const myLatestPlay = game.plays?.byMe?.value;
+                const playerMove = myLatestPlay?.playerMove;
+
                 return (
                   <div
-                    key={gameId || index}
+                    key={gameId}
                     onClick={() => handleGameClick(game)}
                     className="flex items-start gap-4 py-4 lg:py-6 cursor-pointer"
                   >
                     <div className="shrink-0 p-3 bg-secondary rounded-full aspect-square text-secondary-foreground">
-                      <MoveIcon
-                        className="size-6"
-                        move={
-                          activeTab === "my-games"
-                            ? game.hostMove
-                            : (game.playerMove as Move)
-                        }
-                      />
+                      {activeTab === "my-games" ? (
+                        <MoveIcon className="size-6" move={game.hostMove} />
+                      ) : playerMove ? (
+                        <MoveIcon className="size-6" move={playerMove} />
+                      ) : (
+                        <div className="size-6" />
+                      )}
                     </div>
                     <div className="grow flex flex-col md:flex-row gap-3">
                       <div className="grow space-y-2">
@@ -152,38 +147,20 @@ export function Dashboard() {
                           <span
                             className={cn(
                               "px-2 py-1 rounded-full text-xs font-medium",
-                              status.className,
+                              status.className
                             )}
                           >
-                            {status.text}{" "}
-                            {game.dateCompleted &&
-                              `- ${formatGameDate(game.dateCompleted)}`}
+                            {status.text}
                           </span>
                         </div>
                         {game.dateCreated ? (
                           <p className="text-sm text-muted">
-                            {formatGameDate(game.dateCreated)}
+                            Created: {formatGameDate(game.dateCreated)}
                           </p>
                         ) : (
                           <p className="text-sm text-muted">No date</p>
                         )}
                         {game.comment && <p>"{game.comment}"</p>}
-                      </div>
-                      <div className="space-y-2 flex flex-col md:items-end">
-                        {game.winner && (
-                          <p
-                            className={cn(
-                              "font-semibold",
-                              game.winner === "DRAW"
-                                ? "text-muted"
-                                : game.winner === "HOST"
-                                ? "text-teal-500"
-                                : "text-destructive",
-                            )}
-                          >
-                            {getWinnerText(game)}
-                          </p>
-                        )}
                       </div>
                     </div>
                   </div>

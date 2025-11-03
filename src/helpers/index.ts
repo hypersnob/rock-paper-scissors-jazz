@@ -8,14 +8,6 @@ type GroupMember = {
   account?: Account;
 };
 
-export function getGameStatus(game: GameType) {
-  if (game?.isArchived) return "ARCHIVED";
-  if (game?.winner) return "COMPLETED";
-  if (game?.playerMove) return "WAITING_FOR_RESULT";
-  if (game?.hostMove) return "WAITING_FOR_PLAYER";
-  return "CREATING";
-}
-
 export function determineWinner(hostMove: Move, playerMove: Move): Winner {
   if (hostMove === playerMove) return "DRAW";
 

@@ -238,24 +238,18 @@ export function GamePage() {
   // Game not found
   if (game === null || game.isArchived) {
     return (
-      <div className="max-w-lg mx-auto text-center">
-        <div className="bg-red-50 rounded-lg p-8">
-          <h3 className="text-xl font-semibold text-red-800 mb-4">
-            Game {game?.isArchived ? "Archived" : "Not Found"}
-          </h3>
-          <p className="text-red-600 mb-6">
-            {game?.isArchived
-              ? "The game you're looking for has been archived."
-              : "The game you're looking for doesn't exist or you don't have permission to view it."}
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/" })}
-            className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Go Home
-          </button>
-        </div>
+      <div className="bg-accent rounded-lg p-8 max-w-xl mx-auto text-center">
+        <h3 className="text-xl font-semibold mb-4">
+          Game {game?.isArchived ? "Archived" : "Not Found"}
+        </h3>
+        <p className="mb-6">
+          {game?.isArchived
+            ? "The game you're looking for has been archived."
+            : "The game you're looking for doesn't exist or you don't have permission to view it."}
+        </p>
+        <Button type="button" onClick={() => navigate({ to: "/" })}>
+          Go Home
+        </Button>
       </div>
     );
   }
@@ -290,13 +284,19 @@ export function GamePage() {
   if (isHost) {
     return (
       <div>
-        <div className="text-center mb-6">
+        <div className="text-center">
           <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
             Game Created and is active!
           </h2>
+          {game.comment && (
+            <p className="text-xl font-medium italic mb-6">
+              &quot;{game.comment}&quot;
+            </p>
+          )}
           <p className="text-lg text-muted mb-6">
             Share this link with your opponents:
           </p>
+
           <div className="flex items-center gap-4 bg-white rounded-full px-6 py-4 text-primary-foreground mb-8">
             <div className="grow text-left">
               <input
@@ -380,20 +380,23 @@ export function GamePage() {
 
   // Show player move selection (player view)
   if (!isHost && !hasPlayerMove) {
+    const hostMember = game?.$jazz?.owner?.members?.find(
+      (m) => m.role === "admin"
+    );
+    const hostName = hostMember?.account?.profile?.name || "Anonymous Player";
+
     return (
       <div>
-        <div className="text-center mb-8">
+        <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">You've Been Challenged!</h2>
           <p className="mb-2">
             You've been invited to play Rock Paper Scissors
           </p>
           {game.comment && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <p className="text-sm font-medium text-yellow-800 mb-1">
-                Comment:
-              </p>
-              <p className="text-yellow-900 font-medium italic text-left">
-                "{game.comment}"
+            <div className="text-left bg-accent rounded-lg text-lg p-4 my-6 space-y-1">
+              <p className="text-sm font-mediummb-1">{hostName} has said:</p>
+              <p className="font-medium italic text-left">
+                &quot;{game.comment}&quot;
               </p>
             </div>
           )}

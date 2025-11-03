@@ -12,6 +12,8 @@ export function CreateGame() {
     resolve: { profile: true, root: { guestGames: true } },
   });
   const editableRef = useRef<HTMLSpanElement>(null);
+  const questionInputRef = useRef<HTMLDivElement>(null);
+
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
   const { playerName, setPlayerName } = usePlayerName();
 
@@ -125,39 +127,50 @@ export function CreateGame() {
 
           <MoveSelector onMoveSelect={handleCreateGame} />
 
-          <div className="py-12">
-            <div className="relative bg-foreground rounded-full py-4 px-5 mb-4 xl:max-w-2/3 mx-auto flex items-center gap-4">
-              <input
-                id="question"
-                type="text"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder=" "
-                maxLength={100}
-                className="peer outline-none text-background grow"
-              />
-              <label
-                htmlFor="question"
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-all duration-150 ease-out
-                peer-focus:-top-5 peer-focus:text-foreground peer-[:not(:placeholder-shown)]:-top-5 peer-[:not(:placeholder-shown)]:text-foreground"
-              >
-                Optional Comment (e.g., "My place or yours?"){" "}
-                {question && (
-                  <span className="text-sm text-foreground/75">
-                    {question.length}/100 characters
-                  </span>
-                )}
-              </label>
+          <div
+            ref={questionInputRef}
+            className="relative bg-foreground rounded-full py-4 px-5 mb-4 xl:max-w-2/3 mx-auto flex items-center my-12 gap-4"
+          >
+            <input
+              id="question"
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onFocus={() => {
+                if (questionInputRef.current) {
+                  questionInputRef.current.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }
+              }}
+              placeholder=" "
+              maxLength={100}
+              className="peer outline-none text-background grow"
+            />
+            <label
+              htmlFor="question"
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted transition-all duration-150 ease-out
+                peer-focus:-top-5 peer-focus:text-foreground peer-[:not(:placeholder-shown)]:-top-5 peer-[:not(:placeholder-shown)]:text-foreground flex items-center gap-1"
+            >
+              <span>Optional Comment</span>
+              <span className="hidden md:inline">
+                (e.g., My place or yours?)
+              </span>
               {question && (
-                <button
-                  type="button"
-                  className="shrink-0 text-muted hover:text-background transition-all duration-150 ease-out"
-                  onClick={() => setQuestion("")}
-                >
-                  <CloseIcon className="size-3" />
-                </button>
+                <span className="text-foreground/75">
+                  {question.length}/100 characters
+                </span>
               )}
-            </div>
+            </label>
+            {question && (
+              <button
+                type="button"
+                className="shrink-0 text-muted hover:text-background transition-all duration-150 ease-out"
+                onClick={() => setQuestion("")}
+              >
+                <CloseIcon className="size-3" />
+              </button>
+            )}
           </div>
         </>
       )}

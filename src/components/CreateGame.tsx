@@ -49,15 +49,14 @@ export function CreateGame() {
         gameGroup.addMember("everyone", "writer"); // Make game writable by everyone so guests can set their move
 
         // Create new game with proper permissions
+        // Using implicit creation - Jazz will create the plays feed with inherited permissions
         const game = Game.create(
           {
             hostMove: move,
-            playerMove: undefined,
-            winner: undefined,
             comment: question.trim() || undefined,
             dateCreated: new Date().toISOString(),
-            dateCompleted: undefined,
             isArchived: false,
+            plays: [], // Empty array for plays feed - Jazz handles creation
           },
           gameGroup
         );

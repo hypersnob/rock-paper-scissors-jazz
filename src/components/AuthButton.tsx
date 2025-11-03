@@ -72,7 +72,7 @@ export function AuthButton({
       return (
         <Button
           title="Log in"
-          variant="secondary"
+          variant="ghost"
           onClick={handleLogIn}
           type="button"
         >
@@ -85,7 +85,7 @@ export function AuthButton({
     return (
       <Button
         title="Sign up"
-        variant="secondary"
+        variant="ghost"
         onClick={handleSignUp}
         type="button"
       >

@@ -1,46 +1,60 @@
-# Jazz React starter with Tailwind and Passkey Auth
+[![Rock Paper Scissors Game](./public/teaser.png)](https://hardrockpaperscissors.app/)
 
-A minimal starter template for building apps with **[Jazz](https://jazz.tools)**, React, TailwindCSS, and Passkey Auth.
+# Rock Paper Scissors - Jazz Edition
 
-## Creating an app
+A social Rock Paper Scissors game built with **[Jazz](https://jazz.tools)**, React, TailwindCSS, and Passkey Auth. Create games, challenge friends, and track your game history with real-time collaboration.
 
-Create a new Jazz app.
-```bash
-npx create-jazz-app@latest
-```
+## Features
+
+- 🎮 **Create Games**: Make your move and share a link with friends
+- 👥 **Multiplayer**: Play with friends in real-time using Jazz's collaborative sync
+- 📊 **Game Dashboard**: Track all your games (hosted and guest games) in one place
+- 💬 **Optional Comments**: Add questions or comments to your games
+- 🔐 **Passkey Auth**: Secure authentication with passkeys
+- 📱 **Cross-Device**: Access your games from any device with Jazz Cloud sync
+- 🎯 **Game History**: View all plays and results for each game
 
 ## Running locally
 
 Install dependencies:
 
 ```bash
-npm i
-# or
-yarn
+pnpm install
 ```
 
 Then, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
+pnpm dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) with your browser to see the result.
 
-## Learning Jazz
+## How It Works
 
-You can start by playing with the form, adding a new field in [./src/schema.ts](./src/schema.ts),
-and seeing how easy it is to structure your data, and perform basic operations.
+1. **Create a Game**: Sign in and create a new game by selecting your move (Rock, Paper, or Scissors)
+2. **Share the Link**: Copy and share the game link with your opponent
+3. **Play**: Your opponent makes their move and sees the result instantly
+4. **Track History**: View all your games in the dashboard, including games you've hosted and games you've played as a guest
 
-## Questions / problems / feedback
+## Tech Stack
 
-If you have feedback, let us know on [Discord](https://discord.gg/utDMjHYg42) or open an issue or PR to fix something that seems wrong.
+- **[Jazz](https://jazz.tools)** - Real-time collaborative data sync
+- **React 19** - UI framework
+- **TanStack Router** - Routing
+- **TailwindCSS** - Styling
+- **TypeScript** - Type safety
+- **Vite** - Build tool
 
+## Project Structure
 
-## Configuration: sync server
+- `src/schema.ts` - Jazz schema definitions for games, plays, and accounts
+- `src/components/` - React components (CreateGame, GamePage, Dashboard, etc.)
+- `src/App.tsx` - Main app component with routing
+- `src/router.tsx` - Route definitions
 
-By default, the React starter app uses [Jazz Cloud](https://jazz.tools/cloud) (`wss://cloud.jazz.tools`) - so cross-device use, invites and collaboration should just work.
+## Configuration: Sync Server
 
-You can also run a local sync server by running `npx jazz-run sync`, and setting the `sync` parameter of `JazzReactProvider` in [./src/app.tsx](./src/app.tsx) to `{ peer: "ws://localhost:4200" }`.
+By default, the app uses [Jazz Cloud](https://jazz.tools/cloud) (`wss://cloud.jazz.tools`) - so cross-device use, invites and collaboration work automatically.
+
+You can also run a local sync server by running `npx jazz-run sync`, and setting the `sync` parameter of `JazzReactProvider` in [./src/Main.tsx](./src/Main.tsx) to `{ peer: "ws://localhost:4200" }`.

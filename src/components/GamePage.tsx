@@ -34,6 +34,12 @@ export function GamePage() {
       (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin"
     );
 
+  // Get host name once for use in meta titles
+  const hostMember = game?.$jazz?.owner?.members?.find(
+    (m) => m.role === "admin"
+  );
+  const hostName = hostMember?.account?.profile?.name || "Anonymous Player";
+
   // Add game to guestGames when a non-host player visits the game
   useEffect(() => {
     if (game && me?.root?.guestGames && !isHost && gameId) {
@@ -224,41 +230,65 @@ export function GamePage() {
     }
   };
 
+  // Compute title based on game state
+  let pageTitle = "Rock Paper Scissors";
+  if (game) {
+    if (game.isClosed) {
+      pageTitle = isHost
+        ? `Game by you from ${formatGameDate(game.dateCreated)}`
+        : `Game by ${hostName} from ${formatGameDate(game.dateCreated)}`;
+    } else if (isHost) {
+      pageTitle = "Rock Paper Scissors - Your Game";
+    } else if (!isHost && myLatestPlay) {
+      pageTitle = `Game by ${hostName} from ${formatGameDate(
+        game.dateCreated
+      )}`;
+    } else if (!isHost && !hasPlayerMove) {
+      pageTitle = `You've been challenged to play Rock Paper Scissors by ${hostName}`;
+    }
+  }
+
   // Loading state
   if (game === undefined) {
     return (
-      <div className="max-w-lg mx-auto text-center">
-        <LoaderCircle strokeWidth={3} size={28} className="animate-spin" />
-      </div>
+      <>
+        {/* React 19 automatically hoists this to <head> */}
+        <title>Loading Game - Rock Paper Scissors</title>
+        <div className="max-w-lg mx-auto text-center">
+          <LoaderCircle strokeWidth={3} size={28} className="animate-spin" />
+        </div>
+      </>
     );
   }
 
   // Game not found
   if (game === null) {
     return (
-      <div className="bg-accent rounded-lg p-8 max-w-xl mx-auto text-center">
-        <h3 className="text-xl font-semibold mb-4">Game Not Found</h3>
-        <p className="mb-6">
-          The game you're looking for doesn't exist or you don't have permission
-          to view it.
-        </p>
-        <Button type="button" onClick={() => navigate({ to: "/" })}>
-          Go Home
-        </Button>
-      </div>
+      <>
+        {/* React 19 automatically hoists this to <head> */}
+        <title>Game Not Found - Rock Paper Scissors</title>
+        <div className="bg-accent rounded-lg p-8 max-w-xl mx-auto text-center">
+          <h3 className="text-xl font-semibold mb-4">Game Not Found</h3>
+          <p className="mb-6">
+            The game you're looking for doesn't exist or you don't have
+            permission to view it.
+          </p>
+          <Button type="button" onClick={() => navigate({ to: "/" })}>
+            Go Home
+          </Button>
+        </div>
+      </>
     );
   }
 
   // Closed game view - show game details and plays list
   if (game.isClosed) {
-    const hostMember = game?.$jazz?.owner?.members?.find(
-      (m) => m.role === "admin"
-    );
-    const hostName = hostMember?.account?.profile?.name || "Anonymous Player";
     const gameByText = isHost ? "Game by you" : `Game by ${hostName}`;
 
     return (
       <div>
+        {/* React 19 automatically hoists this to <head> */}
+        <title>{pageTitle}</title>
         <div className="text-center">
           <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
             {gameByText} from {formatGameDate(game.dateCreated)}
@@ -335,6 +365,8 @@ export function GamePage() {
 
     return (
       <div className="max-w-lg mx-auto">
+        {/* React 19 automatically hoists this to <head> */}
+        <title>{pageTitle}</title>
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold mb-4">
             {isDraw
@@ -358,6 +390,8 @@ export function GamePage() {
   if (isHost) {
     return (
       <div>
+        {/* React 19 automatically hoists this to <head> */}
+        <title>{pageTitle}</title>
         <div className="text-center">
           <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
             Game Created and is active!
@@ -454,26 +488,17 @@ export function GamePage() {
 
   // Show player move selection (player view)
   if (!isHost && !hasPlayerMove) {
-    const hostMember = game?.$jazz?.owner?.members?.find(
-      (m) => m.role === "admin"
-    );
-    const hostName = hostMember?.account?.profile?.name || "Anonymous Player";
-
     return (
       <div>
+        {/* React 19 automatically hoists this to <head> */}
+        <title>{pageTitle}</title>
         <div className="text-center">
-          <h2 className="text-3xl font-bold mb-4">You've Been Challenged!</h2>
-          <p className="mb-2">
-            You've been invited to play Rock Paper Scissors
+          <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
+            You've Been Challenged by {hostName}!
+          </h2>
+          <p className="mb-2 text-lg">
+            You've been invited to play Rock Paper Scissors. Make your move!
           </p>
-          {game.comment && (
-            <div className="text-left bg-accent rounded-lg text-lg p-4 my-6 space-y-1">
-              <p className="text-sm font-mediummb-1">{hostName} has said:</p>
-              <p className="font-medium italic text-left">
-                &quot;{game.comment}&quot;
-              </p>
-            </div>
-          )}
         </div>
 
         <MoveSelector onMoveSelect={handlePlayerMove} />

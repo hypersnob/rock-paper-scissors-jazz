@@ -21,7 +21,7 @@ export function Dashboard() {
   });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"my-games" | "guest-games">(
-    "my-games"
+    "my-games",
   );
 
   // Get games from Jazz - these are real CoLists that will contain game data
@@ -77,129 +77,133 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl lg:text-5xl font-display font-black mb-2">
-          Game Dashboard
-        </h1>
-        <p className="text-lg text-muted">
-          Welcome back,{" "}
-          <span className="font-medium">{me.profile?.name || "Player"}</span>!
-        </p>
-      </div>
+    <>
+      <title>Game Dashboard</title>
+      <meta name="description" content="View your game dashboard and history" />
+      <div className="space-y-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl lg:text-5xl font-display font-black mb-2">
+            Game Dashboard
+          </h1>
+          <p className="text-lg text-muted">
+            Welcome back,{" "}
+            <span className="font-medium">{me.profile?.name || "Player"}</span>!
+          </p>
+        </div>
 
-      {/* Tab Navigation */}
-      {(myGames.length > 0 || guestGames.length > 0) && (
-        <nav className="flex gap-4">
-          <TabItem
-            isActive={activeTab === "my-games"}
-            onClick={() => setActiveTab("my-games")}
-            count={myGames.length}
-            className="grow"
-          >
-            My Games
-          </TabItem>
-          <TabItem
-            isActive={activeTab === "guest-games"}
-            onClick={() => setActiveTab("guest-games")}
-            count={guestGames.length}
-            className="grow"
-          >
-            Guest Games
-          </TabItem>
-        </nav>
-      )}
+        {/* Tab Navigation */}
+        {(myGames.length > 0 || guestGames.length > 0) && (
+          <nav className="flex gap-4">
+            <TabItem
+              isActive={activeTab === "my-games"}
+              onClick={() => setActiveTab("my-games")}
+              count={myGames.length}
+              className="grow"
+            >
+              My Games
+            </TabItem>
+            <TabItem
+              isActive={activeTab === "guest-games"}
+              onClick={() => setActiveTab("guest-games")}
+              count={guestGames.length}
+              className="grow"
+            >
+              Guest Games
+            </TabItem>
+          </nav>
+        )}
 
-      {/* Game List */}
-      {currentGames.length === 0 ? (
-        <p className="text-lg font-medium text-center">
-          {activeTab === "my-games"
-            ? "Create your first game and challenge someone!"
-            : "No games played as a guest yet."}
-        </p>
-      ) : (
-        <div className="divide-y-2 divide-accent">
-          {Array.isArray(currentGames) && currentGames.length > 0 ? (
-            currentGames
-              .filter((game: GameType) => game != null)
-              .sort((a: GameType, b: GameType) => {
-                return a.isClosed ? 1 : -1;
-              })
-              .map((game: GameType) => {
-                const status = getGameStatus(game);
-                const gameId = game.$jazz?.id;
+        {/* Game List */}
+        {currentGames.length === 0 ? (
+          <p className="text-lg font-medium text-center">
+            {activeTab === "my-games"
+              ? "Create your first game and challenge someone!"
+              : "No games played as a guest yet."}
+          </p>
+        ) : (
+          <div className="divide-y-2 divide-accent">
+            {Array.isArray(currentGames) && currentGames.length > 0 ? (
+              currentGames
+                .filter((game: GameType) => game != null)
+                .sort((a: GameType) => {
+                  return a.isClosed ? 1 : -1;
+                })
+                .map((game: GameType) => {
+                  const status = getGameStatus(game);
+                  const gameId = game.$jazz?.id;
 
-                if (!gameId) return null;
+                  if (!gameId) return null;
 
-                // Get player's move for guest games
-                const myLatestPlay = game.plays?.byMe?.value;
-                const playerMove = myLatestPlay?.playerMove;
+                  // Get player's move for guest games
+                  const myLatestPlay = game.plays?.byMe?.value;
+                  const playerMove = myLatestPlay?.playerMove;
 
-                return (
-                  <div
-                    key={gameId}
-                    onClick={() => handleGameClick(game)}
-                    className="flex items-start gap-4 py-4 lg:py-6 cursor-pointer"
-                  >
-                    <div className="shrink-0 p-3 bg-secondary rounded-full aspect-square text-secondary-foreground">
-                      {activeTab === "my-games" ? (
-                        <MoveIcon className="size-6" move={game.hostMove} />
-                      ) : playerMove ? (
-                        <MoveIcon className="size-6" move={playerMove} />
-                      ) : (
-                        <div className="size-6" />
+                  return (
+                    <div
+                      key={gameId}
+                      onClick={() => handleGameClick(game)}
+                      className="flex items-start gap-4 py-4 lg:py-6 cursor-pointer"
+                    >
+                      <div className="shrink-0 p-3 bg-secondary rounded-full aspect-square text-secondary-foreground">
+                        {activeTab === "my-games" ? (
+                          <MoveIcon className="size-6" move={game.hostMove} />
+                        ) : playerMove ? (
+                          <MoveIcon className="size-6" move={playerMove} />
+                        ) : (
+                          <div className="size-6" />
+                        )}
+                      </div>
+                      <div className="grow flex flex-col md:flex-row gap-3">
+                        <div className="grow space-y-2">
+                          <div>
+                            <span
+                              className={cn(
+                                "px-2 py-1 rounded-full text-xs font-medium",
+                                status.className,
+                              )}
+                            >
+                              {status.text}
+                            </span>
+                          </div>
+                          {game.dateCreated ? (
+                            <p className="text-sm text-muted">
+                              Created: {formatGameDate(game.dateCreated)}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-muted">No date</p>
+                          )}
+                          {game.comment && <p>"{game.comment}"</p>}
+                        </div>
+                      </div>
+                      {activeTab === "my-games" && !game.isClosed && (
+                        <Button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleArchiveGame(game);
+                          }}
+                        >
+                          <ArchiveIcon className="size-4" />
+                        </Button>
                       )}
                     </div>
-                    <div className="grow flex flex-col md:flex-row gap-3">
-                      <div className="grow space-y-2">
-                        <div>
-                          <span
-                            className={cn(
-                              "px-2 py-1 rounded-full text-xs font-medium",
-                              status.className
-                            )}
-                          >
-                            {status.text}
-                          </span>
-                        </div>
-                        {game.dateCreated ? (
-                          <p className="text-sm text-muted">
-                            Created: {formatGameDate(game.dateCreated)}
-                          </p>
-                        ) : (
-                          <p className="text-sm text-muted">No date</p>
-                        )}
-                        {game.comment && <p>"{game.comment}"</p>}
-                      </div>
-                    </div>
-                    {activeTab === "my-games" && !game.isClosed && (
-                      <Button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleArchiveGame(game);
-                        }}
-                      >
-                        <ArchiveIcon className="size-4" />
-                      </Button>
-                    )}
-                  </div>
-                );
-              })
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No games found</p>
-            </div>
-          )}
-        </div>
-      )}
+                  );
+                })
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No games found</p>
+              </div>
+            )}
+          </div>
+        )}
 
-      {/* Quick Actions */}
-      <div className="flex gap-4 justify-center">
-        <Button type="button" asChild>
-          <Link to="/">Create New Game</Link>
-        </Button>
-      </div>
-    </div>
+        {/* Quick Actions */}
+        <div className="flex gap-4 justify-center">
+          <Button type="button" asChild>
+            <Link to="/">Create New Game</Link>
+          </Button>
+        </div>
+      </div>{" "}
+    </>
   );
 }

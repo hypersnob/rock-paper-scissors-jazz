@@ -87,7 +87,7 @@ export function About() {
           </p>
         </div>
 
-        <div className="flex gap-4 justify-center pt-4">
+        <div className="flex flex-col lg:flex-row gap-4 justify-center pt-4">
           <Button type="button" asChild>
             <Link to="/">Create New Game</Link>
           </Button>

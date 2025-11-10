@@ -60,7 +60,7 @@ export function CreateGame() {
             isClosed: false,
             plays: [], // Empty array for plays feed - Jazz handles creation
           },
-          gameGroup
+          gameGroup,
         );
 
         // Add game to user's games using the $jazz.push method
@@ -78,7 +78,7 @@ export function CreateGame() {
       } finally {
       }
     },
-    [me, question, navigate]
+    [me, question, navigate],
   );
 
   return (
@@ -89,7 +89,7 @@ export function CreateGame() {
         </div>
       ) : (
         <>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black lg:max-w-4/5 mb-[.5em] text-center mx-auto">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-black lg:max-w-4/5 mb-[.5em] text-center mx-auto">
             Hey{" "}
             <span
               ref={editableRef}

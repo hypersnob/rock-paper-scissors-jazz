@@ -23,8 +23,8 @@ createRoot(document.getElementById("root")!).render(
       AccountSchema={JazzAccount}
     >
       <RouterProvider router={router} />
-      <JazzInspector />
+      {import.meta.env.DEV && <JazzInspector />}
       <Toaster />
     </JazzReactProvider>
-  </StrictMode>
+  </StrictMode>,
 );

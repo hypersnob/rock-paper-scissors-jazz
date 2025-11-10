@@ -31,12 +31,12 @@ export function GamePage() {
   const isHost =
     me &&
     game?.$jazz?.owner?.members?.some(
-      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin"
+      (m) => m.account?.$jazz?.id === me.$jazz.id && m.role === "admin",
     );
 
   // Get host name once for use in meta titles
   const hostMember = game?.$jazz?.owner?.members?.find(
-    (m) => m.role === "admin"
+    (m) => m.role === "admin",
   );
   const hostName = hostMember?.account?.profile?.name || "Anonymous Player";
 
@@ -45,7 +45,7 @@ export function GamePage() {
     if (game && me?.root?.guestGames && !isHost && gameId) {
       // Check if game is already in the list
       const gameAlreadyInList = me.root.guestGames.some(
-        (g) => g?.$jazz?.id === gameId
+        (g) => g?.$jazz?.id === gameId,
       );
 
       if (!gameAlreadyInList) {
@@ -81,7 +81,7 @@ export function GamePage() {
           try {
             // Check if game is already in the list
             const gameAlreadyInList = me.root.guestGames.some(
-              (g) => g?.$jazz?.id === game.$jazz.id
+              (g) => g?.$jazz?.id === game.$jazz.id,
             );
 
             if (!gameAlreadyInList) {
@@ -95,7 +95,7 @@ export function GamePage() {
         console.error("Failed to submit move:", err);
       }
     },
-    [game, me, myLatestPlay]
+    [game, me, myLatestPlay],
   );
 
   // Get all plays from all accounts - compute directly in render for reactivity
@@ -190,17 +190,17 @@ export function GamePage() {
   const sortedPlays = allPlays
     .filter(
       (
-        p
+        p,
       ): p is {
         play: NonNullable<typeof myLatestPlay>;
         accountId: string;
         accountFeed: NonNullable<typeof perAccount>[string];
-      } => p.play != null
+      } => p.play != null,
     )
     .sort(
       (a, b) =>
         new Date(b.play.datePlayed).getTime() -
-        new Date(a.play.datePlayed).getTime()
+        new Date(a.play.datePlayed).getTime(),
     );
 
   const hasPlayerMove = !!myLatestPlay;
@@ -241,7 +241,7 @@ export function GamePage() {
       pageTitle = "Rock Paper Scissors - Your Game";
     } else if (!isHost && myLatestPlay) {
       pageTitle = `Game by ${hostName} from ${formatGameDate(
-        game.dateCreated
+        game.dateCreated,
       )}`;
     } else if (!isHost && !hasPlayerMove) {
       pageTitle = `You've been challenged to play Rock Paper Scissors by ${hostName}`;
@@ -295,7 +295,8 @@ export function GamePage() {
           </h2>
           {game.comment && (
             <p className="text-xl font-medium italic mb-6">
-              &quot;{game.comment}&quot;
+              {isHost ? "You" : hostName}&apos;s comment: &quot;{game.comment}
+              &quot;
             </p>
           )}
         </div>
@@ -320,8 +321,8 @@ export function GamePage() {
                 const resultText = isDraw
                   ? "🤝 Draw"
                   : hostWon
-                    ? "Host Won"
-                    : "Player Won";
+                  ? "Host Won"
+                  : "Player Won";
 
                 return (
                   <div
@@ -372,8 +373,8 @@ export function GamePage() {
             {isDraw
               ? "🤝 It's a Draw!"
               : userWon
-                ? "🎉 You Won!"
-                : "😔 You Lost"}
+              ? "🎉 You Won!"
+              : "😔 You Lost"}
           </h2>
         </div>
 
@@ -398,7 +399,7 @@ export function GamePage() {
           </h2>
           {game.comment && (
             <p className="text-xl font-medium italic mb-6">
-              &quot;{game.comment}&quot;
+              You&apos;s comment: &quot;{game.comment}&quot;
             </p>
           )}
           <p className="text-lg text-muted mb-6">
@@ -448,8 +449,8 @@ export function GamePage() {
                 const resultText = isDraw
                   ? "🤝 Draw"
                   : hostWon
-                    ? "🎉 You Won"
-                    : "😔 You Lost";
+                  ? "🎉 You Won"
+                  : "😔 You Lost";
 
                 return (
                   <div
@@ -496,9 +497,14 @@ export function GamePage() {
           <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
             You've Been Challenged by {hostName}!
           </h2>
-          <p className="mb-2 text-lg">
+          <p className="my-4 text-lg">
             You've been invited to play Rock Paper Scissors. Make your move!
           </p>
+          {game.comment && (
+            <p className="text-xl font-medium italic mb-6">
+              {hostName}&apos;s comment: &quot;{game.comment}&quot;
+            </p>
+          )}
         </div>
 
         <MoveSelector onMoveSelect={handlePlayerMove} />

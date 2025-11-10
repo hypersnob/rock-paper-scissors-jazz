@@ -4,5 +4,11 @@
       "APP_NAME": "jazz-react-tailwind-starter"
     }
   },
-  "ignoreCommand": "node ../../ignore-vercel-build.js"
+  "ignoreCommand": "node ../../ignore-vercel-build.js",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }

@@ -1,13 +1,11 @@
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useAccount, useCoState } from "jazz-tools/react";
+import { CheckIcon, CopyIcon, LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { MoveIcon } from "@/components/MoveIcon";
 import { MoveSelector } from "@/components/MoveSelector";
 import { Button } from "@/components/ui/button";
-import { determineWinner } from "@/helpers";
-import CheckIcon from "@/icons/Check.svg?react";
-import CopyIcon from "@/icons/Copy.svg?react";
-import LoadingIcon from "@/icons/Loader.svg?react";
+import { determineWinner, formatGameDate } from "@/helpers";
 import { Game, JazzAccount, type Move } from "@/schema";
 
 export function GamePage() {
@@ -230,26 +228,102 @@ export function GamePage() {
   if (game === undefined) {
     return (
       <div className="max-w-lg mx-auto text-center">
-        <LoadingIcon className="size-12 animate-spin" />
+        <LoaderCircle strokeWidth={3} size={28} className="animate-spin" />
       </div>
     );
   }
 
   // Game not found
-  if (game === null || game.isArchived) {
+  if (game === null) {
     return (
       <div className="bg-accent rounded-lg p-8 max-w-xl mx-auto text-center">
-        <h3 className="text-xl font-semibold mb-4">
-          Game {game?.isArchived ? "Archived" : "Not Found"}
-        </h3>
+        <h3 className="text-xl font-semibold mb-4">Game Not Found</h3>
         <p className="mb-6">
-          {game?.isArchived
-            ? "The game you're looking for has been archived."
-            : "The game you're looking for doesn't exist or you don't have permission to view it."}
+          The game you're looking for doesn't exist or you don't have permission
+          to view it.
         </p>
         <Button type="button" onClick={() => navigate({ to: "/" })}>
           Go Home
         </Button>
+      </div>
+    );
+  }
+
+  // Closed game view - show game details and plays list
+  if (game.isClosed) {
+    const hostMember = game?.$jazz?.owner?.members?.find(
+      (m) => m.role === "admin"
+    );
+    const hostName = hostMember?.account?.profile?.name || "Anonymous Player";
+    const gameByText = isHost ? "Game by you" : `Game by ${hostName}`;
+
+    return (
+      <div>
+        <div className="text-center">
+          <h2 className="text-4xl lg:text-5xl font-display font-black mb-3">
+            {gameByText} from {formatGameDate(game.dateCreated)}
+          </h2>
+          {game.comment && (
+            <p className="text-xl font-medium italic mb-6">
+              &quot;{game.comment}&quot;
+            </p>
+          )}
+        </div>
+
+        {/* Plays List */}
+        {hasAnyPlay ? (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold mb-4">
+              Plays ({sortedPlays.length})
+            </h3>
+            <div className="space-y-3">
+              {sortedPlays.map(({ play, accountFeed }, index) => {
+                if (!play) return null;
+
+                // Get player account from the accountFeed's by property
+                const playerAccount = accountFeed?.by;
+                const playerName =
+                  playerAccount?.profile?.name || "Anonymous Player";
+
+                const isDraw = play.winner === "DRAW";
+                const hostWon = !isDraw && play.winner === "HOST";
+                const resultText = isDraw
+                  ? "🤝 Draw"
+                  : hostWon
+                    ? "Host Won"
+                    : "Player Won";
+
+                return (
+                  <div
+                    key={`${play.datePlayed}-${index}`}
+                    className="bg-accent rounded-lg p-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-secondary rounded-full text-secondary-foreground">
+                          <MoveIcon move={play.playerMove} className="size-4" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{playerName}</p>
+                          <p className="text-sm text-muted">
+                            {new Date(play.datePlayed).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">{resultText}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <p className="text-center text-muted mt-6">
+            No plays recorded for this game.
+          </p>
+        )}
       </div>
     );
   }
@@ -312,9 +386,9 @@ export function GamePage() {
               className="transition-colors"
             >
               {copied ? (
-                <CheckIcon className="size-6" />
+                <CheckIcon strokeWidth={3} size={28} />
               ) : (
-                <CopyIcon className="size-6" />
+                <CopyIcon strokeWidth={3} size={28} />
               )}
             </button>
           </div>

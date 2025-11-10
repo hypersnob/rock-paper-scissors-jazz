@@ -1,10 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Group } from "jazz-tools";
 import { useAccount } from "jazz-tools/react";
+import { XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePlayerName } from "@/App";
 import { MoveSelector } from "@/components/MoveSelector.tsx";
-import CloseIcon from "@/icons/Close.svg?react";
 import { Game, JazzAccount, type Move } from "@/schema.ts";
 
 export function CreateGame() {
@@ -57,7 +57,7 @@ export function CreateGame() {
             hostMove: move,
             comment: question.trim() || undefined,
             dateCreated: new Date().toISOString(),
-            isArchived: false,
+            isClosed: false,
             plays: [], // Empty array for plays feed - Jazz handles creation
           },
           gameGroup
@@ -168,7 +168,7 @@ export function CreateGame() {
                 className="shrink-0 text-muted hover:text-background transition-all duration-150 ease-out"
                 onClick={() => setQuestion("")}
               >
-                <CloseIcon className="size-3" />
+                <XIcon strokeWidth={3} size={24} />
               </button>
             )}
           </div>

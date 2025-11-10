@@ -47,8 +47,8 @@ export function Dashboard() {
 
   const getGameStatus = (game: GameType) => {
     if (!game) return { text: "Unknown", className: "bg-muted" };
-    if (game.isArchived)
-      return { text: "Archived", className: "bg-orange-800 text-orange-500" };
+    if (game.isClosed)
+      return { text: "Closed", className: "bg-orange-800 text-orange-500" };
     return {
       text: "Active",
       className: "bg-green-800 text-green-500",
@@ -73,7 +73,7 @@ export function Dashboard() {
   }
 
   const handleArchiveGame = (game: GameType) => {
-    game.$jazz.set("isArchived", true);
+    game.$jazz.set("isClosed", true);
   };
 
   return (
@@ -123,7 +123,7 @@ export function Dashboard() {
             currentGames
               .filter((game: GameType) => game != null)
               .sort((a: GameType, b: GameType) => {
-                return a.isArchived ? 1 : -1;
+                return a.isClosed ? 1 : -1;
               })
               .map((game: GameType) => {
                 const status = getGameStatus(game);
@@ -172,7 +172,7 @@ export function Dashboard() {
                         {game.comment && <p>"{game.comment}"</p>}
                       </div>
                     </div>
-                    {activeTab === "my-games" && !game.isArchived && (
+                    {activeTab === "my-games" && !game.isClosed && (
                       <Button
                         type="button"
                         onClick={(e) => {

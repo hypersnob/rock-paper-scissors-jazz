@@ -4,6 +4,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import App from "./App";
+import { About } from "./components/About";
 import { CreateGame } from "./components/CreateGame";
 import { Dashboard } from "./components/Dashboard";
 import { GamePage } from "./components/GamePage";
@@ -34,11 +35,18 @@ const dashboardRoute = createRoute({
   component: Dashboard,
 });
 
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/about",
+  component: About,
+});
+
 // Create router
 export const router = createRouter({
   routeTree: rootRoute.addChildren([
     createGameRoute,
     gameRoute,
     dashboardRoute,
+    aboutRoute,
   ]),
 });

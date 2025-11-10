@@ -28,7 +28,7 @@ export const Game = co.map({
   hostMove: Move,
   comment: z.string().optional(),
   dateCreated: z.string(),
-  isArchived: z.boolean().optional(),
+  isClosed: z.boolean().optional(),
   plays: co.feed(Play),
 });
 

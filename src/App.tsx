@@ -1,9 +1,9 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
+import { InfoIcon, ListIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AuthButton } from "@/components/AuthButton";
 import { Button } from "@/components/ui/button";
-import ListIcon from "@/icons/List.svg?react";
 import Logo from "@/icons/Logo.svg?react";
 import { JazzAccount } from "@/schema";
 
@@ -58,7 +58,12 @@ function App() {
       <footer className="flex justify-between items-center py-6 container mx-auto">
         <Button variant="ghost" asChild>
           <Link to="/dashboard">
-            <ListIcon className="size-6" />
+            <ListIcon strokeWidth={3} size={28} />
+          </Link>
+        </Button>
+        <Button variant="ghost" asChild>
+          <Link to="/about">
+            <InfoIcon strokeWidth={3} size={28} />
           </Link>
         </Button>
       </footer>

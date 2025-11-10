@@ -2,9 +2,8 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import { useAccount, usePasskeyAuth } from "jazz-tools/react";
+import { LogInIcon, LogOutIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LogInIcon from "@/icons/LogIn.svg?react";
-import LogOutIcon from "@/icons/LogOut.svg?react";
 import { APPLICATION_NAME } from "@/Main";
 
 function getHasSignedUpKey() {
@@ -56,7 +55,7 @@ export function AuthButton({
         title="Sign out"
         onClick={handleLogOut}
       >
-        <LogOutIcon className="size-6" />
+        <LogOutIcon strokeWidth={3} size={28} />
       </Button>
     );
   }
@@ -76,7 +75,7 @@ export function AuthButton({
           onClick={handleLogIn}
           type="button"
         >
-          <LogInIcon className="size-6" />
+          <LogInIcon strokeWidth={3} size={28} />
         </Button>
       );
     }
@@ -89,7 +88,7 @@ export function AuthButton({
         onClick={handleSignUp}
         type="button"
       >
-        <LogInIcon className="size-6" />
+        <LogInIcon strokeWidth={3} size={28} />
       </Button>
     );
   }

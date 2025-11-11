@@ -25,7 +25,7 @@ export function TabItem({
         isActive
           ? "text-primary-foreground bg-primary hover:bg-primary/80"
           : "text-secondary-foreground bg-secondary hover:bg-secondary/80",
-        className
+        className,
       )}
       {...props}
     >

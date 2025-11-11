@@ -13,7 +13,7 @@ type PlayerNameContextType = {
 };
 
 const PlayerNameContext = createContext<PlayerNameContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function usePlayerName() {
@@ -29,7 +29,7 @@ function App() {
     resolve: { profile: true },
   });
   const [playerName, setPlayerName] = useState(
-    me?.profile?.name || "Anonymous Player"
+    me?.profile?.name || "Anonymous Player",
   );
 
   // Sync local state with profile when profile loads or changes

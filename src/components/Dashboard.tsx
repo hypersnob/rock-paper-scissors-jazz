@@ -1,13 +1,29 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAccount } from "jazz-tools/react";
-import { ArchiveIcon } from "lucide-react";
+import { ArchiveIcon, BadgeQuestionMarkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatGameDate } from "@/helpers";
 import { cn } from "@/lib/utils";
-import { type GameType, JazzAccount } from "@/schema";
+import { type GameType, JazzAccount, type Move } from "@/schema";
 import { MoveIcon } from "./MoveIcon";
 import { Button } from "./ui/button";
 import { TabItem } from "./ui/tab-item";
+
+const getGameStatus = (
+  game: GameType,
+  isGuestGame: boolean,
+  hasPlayerMove: boolean,
+) => {
+  if (!game) return { text: "Unknown", className: "bg-muted" };
+  if (game.isClosed)
+    return { text: "Closed", className: "bg-orange-800 text-orange-500" };
+  if (isGuestGame && !hasPlayerMove)
+    return { text: "Open", className: "bg-indigo-900 text-indigo-300" };
+  return {
+    text: "Active",
+    className: "bg-green-800 text-green-500",
+  };
+};
 
 export function Dashboard() {
   const { me } = useAccount(JazzAccount, {
@@ -43,16 +59,6 @@ export function Dashboard() {
       to: "/$gameId",
       params: { gameId },
     });
-  };
-
-  const getGameStatus = (game: GameType) => {
-    if (!game) return { text: "Unknown", className: "bg-muted" };
-    if (game.isClosed)
-      return { text: "Closed", className: "bg-orange-800 text-orange-500" };
-    return {
-      text: "Active",
-      className: "bg-green-800 text-green-500",
-    };
   };
 
   if (!me) {
@@ -129,7 +135,6 @@ export function Dashboard() {
                   return a.isClosed ? 1 : -1;
                 })
                 .map((game: GameType) => {
-                  const status = getGameStatus(game);
                   const gameId = game.$jazz?.id;
 
                   if (!gameId) return null;
@@ -137,6 +142,31 @@ export function Dashboard() {
                   // Get player's move for guest games
                   const myLatestPlay = game.plays?.byMe?.value;
                   const playerMove = myLatestPlay?.playerMove;
+                  const hasPlayerMove = !!playerMove;
+                  const isGuestGame = activeTab === "guest-games";
+
+                  // Determine which move to display
+                  let moveToDisplay: Move | undefined;
+                  if (activeTab === "my-games") {
+                    moveToDisplay = game.hostMove;
+                  } else {
+                    moveToDisplay = playerMove;
+                  }
+
+                  const status = getGameStatus(
+                    game,
+                    isGuestGame,
+                    hasPlayerMove,
+                  );
+
+                  // Get host name for guest games
+                  const hostMember = isGuestGame
+                    ? game?.$jazz?.owner?.members?.find(
+                        (m) => m.role === "admin",
+                      )
+                    : null;
+                  const hostName =
+                    hostMember?.account?.profile?.name || "Anonymous Player";
 
                   return (
                     <div
@@ -144,13 +174,18 @@ export function Dashboard() {
                       onClick={() => handleGameClick(game)}
                       className="flex items-start gap-4 py-4 lg:py-6 cursor-pointer"
                     >
-                      <div className="shrink-0 p-3 bg-secondary rounded-full aspect-square text-secondary-foreground">
-                        {activeTab === "my-games" ? (
-                          <MoveIcon className="size-6" move={game.hostMove} />
-                        ) : playerMove ? (
-                          <MoveIcon className="size-6" move={playerMove} />
+                      <div
+                        className={cn(
+                          "shrink-0 p-3 rounded-full aspect-square",
+                          moveToDisplay
+                            ? "bg-secondary text-secondary-foreground"
+                            : "bg-primary text-primary-foreground",
+                        )}
+                      >
+                        {moveToDisplay ? (
+                          <MoveIcon className="size-6" move={moveToDisplay} />
                         ) : (
-                          <div className="size-6" />
+                          <BadgeQuestionMarkIcon size={24} />
                         )}
                       </div>
                       <div className="grow flex flex-col md:flex-row gap-3">
@@ -167,10 +202,14 @@ export function Dashboard() {
                           </div>
                           {game.dateCreated ? (
                             <p className="text-sm text-muted">
-                              Created: {formatGameDate(game.dateCreated)}
+                              Created by{" "}
+                              <span className="font-bold text-secondary">
+                                {isGuestGame ? hostName : "me"}
+                              </span>{" "}
+                              on {formatGameDate(game.dateCreated)}
                             </p>
                           ) : (
-                            <p className="text-sm text-muted">No date</p>
+                            <span className="text-sm text-muted">No date</span>
                           )}
                           {game.comment && <p>"{game.comment}"</p>}
                         </div>

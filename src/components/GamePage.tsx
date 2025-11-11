@@ -321,8 +321,8 @@ export function GamePage() {
                 const resultText = isDraw
                   ? "🤝 Draw"
                   : hostWon
-                  ? "Host Won"
-                  : "Player Won";
+                    ? "Host Won"
+                    : "Player Won";
 
                 return (
                   <div
@@ -373,8 +373,8 @@ export function GamePage() {
             {isDraw
               ? "🤝 It's a Draw!"
               : userWon
-              ? "🎉 You Won!"
-              : "😔 You Lost"}
+                ? "🎉 You Won!"
+                : "😔 You Lost"}
           </h2>
         </div>
 
@@ -449,8 +449,8 @@ export function GamePage() {
                 const resultText = isDraw
                   ? "🤝 Draw"
                   : hostWon
-                  ? "🎉 You Won"
-                  : "😔 You Lost";
+                    ? "🎉 You Won"
+                    : "😔 You Lost";
 
                 return (
                   <div

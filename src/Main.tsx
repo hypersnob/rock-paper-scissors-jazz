@@ -9,7 +9,7 @@ import { apiKey } from "@/apiKey";
 import { router } from "@/router";
 import { JazzAccount } from "@/schema";
 import "@fontsource-variable/nunito-sans";
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 
 // This identifies the app in the passkey auth
 export const APPLICATION_NAME = "hard-rock-paper-scissors";
